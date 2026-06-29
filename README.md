@@ -2,7 +2,7 @@
 
 An architecture foundation for a cloud-native Electric Vehicle (EV) and automotive component e-commerce platform.
 
-## System Architecture & Design Pattern
+### System Architecture & Design Pattern
 
 * **Controller Layer:** Handles REST API endpoints, routing, and HTTP request/response mappings.
 * **Service Layer:** Houses the core business logic and system workflow orchestrations.
