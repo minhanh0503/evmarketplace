@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class OrderService {
@@ -20,10 +21,11 @@ public class OrderService {
 
     @Transactional
     public Order checkout(Long userId) {
+        Objects.requireNonNull(userId, "userId must not be null");
         List<CartItem> cartItems = cartService.getCartByUser(userId);
-        if (cartItems.isEmpty()) {
+
+        if (cartItems.isEmpty())
             throw new IllegalStateException("Cart is empty for user " + userId);
-        }
 
         BigDecimal total = cartService.calculateCartTotal(userId);
 
@@ -51,11 +53,13 @@ public class OrderService {
     }
 
     public Order getOrder(Long orderId) {
+        Objects.requireNonNull(orderId, "orderId must not be null");
         return orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("Order not found: " + orderId));
     }
 
     public List<Order> getOrdersByUser(Long userId) {
+        Objects.requireNonNull(userId, "userId must not be null");
         return orderRepository.findByUserId(userId);
     }
 }

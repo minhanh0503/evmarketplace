@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class CartService {
@@ -24,14 +25,18 @@ public class CartService {
     }
 
     public void removeCartItem(Long cartItemId) {
+        Objects.requireNonNull(cartItemId, "cartItemId must not be null");
         cartItemRepository.deleteById(cartItemId);
     }
 
     public void clearCart(Long userId) {
+        Objects.requireNonNull(userId, "userId must not be null");
         cartItemRepository.deleteByUserId(userId);
     }
 
+    @SuppressWarnings("null") // false positive: BigDecimal.ZERO seed + BigDecimal.add() never produce null
     public BigDecimal calculateCartTotal(Long userId) {
+        Objects.requireNonNull(userId, "userId must not be null");
         return cartItemRepository.findByUserId(userId).stream()
                 .map(i -> i.getUnitPrice().multiply(BigDecimal.valueOf(i.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
