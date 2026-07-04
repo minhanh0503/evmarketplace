@@ -1,14 +1,12 @@
-// CartController.java
 package com.evmarketplace.controller;
 
+import com.evmarketplace.dto.AddToCartRequest;
 import com.evmarketplace.entity.CartItem;
 import com.evmarketplace.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/cart")
@@ -17,13 +15,11 @@ public class CartController {
     private CartService cartService;
 
     @PostMapping("/add")
-    public CartItem addToCart(@RequestBody Map<String, Object> body) {
-        Long userId = Long.valueOf(body.get("userId").toString());
-        Long vehicleId = Long.valueOf(body.get("vehicleId").toString());
-        Integer quantity = Integer.valueOf(body.get("quantity").toString());
-        BigDecimal unitPrice = new BigDecimal(body.get("unitPrice").toString());
-
-        return cartService.addToCart(userId, vehicleId, quantity, unitPrice);
+    public CartItem addToCart(@RequestBody AddToCartRequest request) {
+        return cartService.addToCart(
+            request.getUserId(), request.getVehicleId(),
+            request.getQuantity(), request.getUnitPrice()
+        );
     }
 
     @GetMapping("/{userId}")
