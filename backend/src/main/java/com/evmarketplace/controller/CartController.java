@@ -1,7 +1,7 @@
 package com.evmarketplace.controller;
 
 import com.evmarketplace.dto.AddToCartRequest;
-import com.evmarketplace.entity.CartItem;
+import com.evmarketplace.model.CartItem;
 import com.evmarketplace.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

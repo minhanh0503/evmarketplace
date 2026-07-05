@@ -1,6 +1,6 @@
 package com.evmarketplace.service;
 
-import com.evmarketplace.entity.CartItem;
+import com.evmarketplace.model.CartItem;
 import com.evmarketplace.repository.CartItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

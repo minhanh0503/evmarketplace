@@ -1,7 +1,7 @@
 package com.evmarketplace.controller;
 
 import com.evmarketplace.dto.CheckoutRequest;
-import com.evmarketplace.entity.Order;
+import com.evmarketplace.model.Order;
 import com.evmarketplace.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

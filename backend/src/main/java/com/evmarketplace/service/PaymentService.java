@@ -1,6 +1,6 @@
 package com.evmarketplace.service;
 
-import com.evmarketplace.entity.Payment;
+import com.evmarketplace.model.Payment;
 import com.evmarketplace.repository.PaymentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

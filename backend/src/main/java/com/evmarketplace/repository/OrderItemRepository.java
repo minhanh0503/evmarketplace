@@ -1,7 +1,9 @@
 package com.evmarketplace.repository;
 
-import com.evmarketplace.entity.OrderItem;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.evmarketplace.model.OrderItem;
+
 import java.util.List;
 
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
