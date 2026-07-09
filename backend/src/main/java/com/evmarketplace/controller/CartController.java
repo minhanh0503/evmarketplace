@@ -18,7 +18,7 @@ public class CartController {
     public CartItem addToCart(@RequestBody AddToCartRequest request) {
         return cartService.addToCart(
             request.getUserId(), request.getVehicleId(),
-            request.getQuantity(), request.getUnitPrice()
+            request.getQuantity()
         );
     }
 
