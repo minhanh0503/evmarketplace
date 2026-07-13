@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test Drive Booking</title>
+</head>
+<body>
+<h1>Test Drive Booking</h1>
+
+<h2>View Available Slots</h2>
+<label>Vehicle ID: <input type="number" id="slotVehicleId" value="1"></label>
+<button onclick="loadSlots()">Get Available Slots</button>
+<pre id="slotsOutput"></pre>
+
+<hr>
+
+<h2>Book a Test Drive</h2>
+<label>User ID: <input type="number" id="userId" value="1"></label><br><br>
+<label>Vehicle ID: <input type="number" id="bookVehicleId" value="1"></label><br><br>
+<label>Date and Time (YYYY-MM-DDTHH:MM:SS): <input type="text" id="bookingDateTime" value="2026-07-14T09:00:00"></label><br><br>
+<button onclick="bookTestDrive()">Book Test Drive</button>
+<pre id="bookingOutput"></pre>
+
+<hr>
+
+<h2>Cancel a Booking</h2>
+<label>Booking ID: <input type="number" id="cancelBookingId" value="1"></label>
+<button onclick="cancelBooking()">Cancel Booking</button>
+<pre id="cancelOutput"></pre>
+
+<hr>
+
+<h2>My Bookings</h2>
+<label>User ID: <input type="number" id="myBookingsUserId" value="1"></label>
+<button onclick="getMyBookings()">Get My Bookings</button>
+<pre id="myBookingsOutput"></pre>
+
+<script>
+    const BASE = '/api/test-drives';
+
+    function loadSlots() {
+        const vehicleId = Number(document.getElementById('slotVehicleId').value);
+        fetch(BASE + '/slots/' + vehicleId)
+            .then(r => r.json())
+            .then(data => document.getElementById('slotsOutput').textContent = JSON.stringify(data, null, 2))
+            .catch(err => document.getElementById('slotsOutput').textContent = 'Error: ' + err);
+    }
+
+    function bookTestDrive() {
+        // userId and vehicleId are Long fields on the backend — must be sent as
+        // JSON numbers (unquoted), not strings, or Jackson will fail to deserialize.
+        const body = {
+            userId: Number(document.getElementById('userId').value),
+            vehicleId: Number(document.getElementById('bookVehicleId').value),
+            bookingDateTime: document.getElementById('bookingDateTime').value
+        };
+        fetch(BASE + '/book', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        })
+            .then(r => r.json())
+            .then(data => document.getElementById('bookingOutput').textContent = JSON.stringify(data, null, 2))
+            .catch(err => document.getElementById('bookingOutput').textContent = 'Error: ' + err);
+    }
+
+    function cancelBooking() {
+        const bookingId = Number(document.getElementById('cancelBookingId').value);
+        fetch(BASE + '/cancel/' + bookingId, { method: 'DELETE' })
+            .then(r => r.json())
+            .then(data => document.getElementById('cancelOutput').textContent = JSON.stringify(data, null, 2))
+            .catch(err => document.getElementById('cancelOutput').textContent = 'Error: ' + err);
+    }
+
+    function getMyBookings() {
+        const userId = Number(document.getElementById('myBookingsUserId').value);
+        fetch(BASE + '/user/' + userId)
+            .then(r => r.json())
+            .then(data => document.getElementById('myBookingsOutput').textContent = JSON.stringify(data, null, 2))
+            .catch(err => document.getElementById('myBookingsOutput').textContent = 'Error: ' + err);
+    }
+</script>
+</body>
+</html>
