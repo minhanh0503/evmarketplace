@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Reports</title>
+</head>
+<body>
+<h1>Admin Reports</h1>
+
+<h2>Sales Report (CONFIRMED orders by month)</h2>
+<button onclick="loadSalesReport()">Generate Sales Report</button>
+<pre id="salesOutput"></pre>
+
+<hr>
+
+<h2>Usage Report (event counts by type)</h2>
+<button onclick="loadUsageReport()">Generate Usage Report</button>
+<pre id="usageOutput"></pre>
+
+<hr>
+
+<h2>Seed a Visit Event (for testing usage report)</h2>
+<label>IP Address: <input type="text" id="ipAddress" value="1.2.3.4"></label><br><br>
+<label>Vehicle ID: <input type="number" id="eventVehicleId" value="1"></label><br><br>
+<label>Event Type (VIEW / CART / PURCHASE): <input type="text" id="eventType" value="VIEW"></label><br><br>
+<button onclick="seedVisitEvent()">Record Event</button>
+<pre id="eventOutput"></pre>
+
+<script>
+    function loadSalesReport() {
+        fetch('/api/admin/reports/sales')
+            .then(r => r.json())
+            .then(data => document.getElementById('salesOutput').textContent = JSON.stringify(data, null, 2))
+            .catch(err => document.getElementById('salesOutput').textContent = 'Error: ' + err);
+    }
+
+    function loadUsageReport() {
+        fetch('/api/admin/reports/usage')
+            .then(r => r.json())
+            .then(data => document.getElementById('usageOutput').textContent = JSON.stringify(data, null, 2))
+            .catch(err => document.getElementById('usageOutput').textContent = 'Error: ' + err);
+    }
+
+    function seedVisitEvent() {
+        // vehicleId is a Long field on the backend — must be sent as a JSON
+        // number (unquoted), not a string, or Jackson will fail to deserialize.
+        const body = {
+            ipAddress: document.getElementById('ipAddress').value,
+            vehicleId: Number(document.getElementById('eventVehicleId').value),
+            eventType: document.getElementById('eventType').value
+        };
+        fetch('/api/admin/events', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        })
+            .then(r => r.json())
+            .then(data => document.getElementById('eventOutput').textContent = JSON.stringify(data, null, 2))
+            .catch(err => document.getElementById('eventOutput').textContent = 'Error: ' + err);
+    }
+</script>
+</body>
+</html>

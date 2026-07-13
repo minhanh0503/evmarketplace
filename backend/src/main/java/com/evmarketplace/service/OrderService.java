@@ -18,6 +18,7 @@ public class OrderService {
     @Autowired private OrderRepository orderRepository;
     @Autowired private CartService cartService;
     @Autowired private PaymentService paymentService;
+    @Autowired private NotificationService notificationService;
 
     @Transactional
     public Order checkout(Long userId) {
@@ -46,8 +47,10 @@ public class OrderService {
         savedOrder.setStatus(approved ? Order.Status.CONFIRMED : Order.Status.DENIED);
         orderRepository.save(savedOrder);
 
-        if (approved)
+        if (approved) {
+            notificationService.sendOrderConfirmation(userId, savedOrder.getId());
             cartService.clearCart(userId);
+        }
 
         return savedOrder;
     }
