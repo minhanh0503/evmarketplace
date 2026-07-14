@@ -25,6 +25,25 @@ function Send-JsonPost($url, $jsonText) {
 }
 
 Write-Host "============================================="
+Write-Host "Cleaning up previous test drive bookings for user 1..."
+Write-Host "============================================="
+
+# Get existing bookings
+$bookingsJson = curl.exe -s -X GET "$BaseUrl/api/test-drives/user/1"
+$bookings = $bookingsJson | ConvertFrom-Json
+
+if ($bookings) {
+    foreach ($b in $bookings) {
+        if ($b.status -eq "CONFIRMED") {
+            Write-Host "Cancelling booking ID: $($b.id)"
+            curl.exe -s -X DELETE "$BaseUrl/api/test-drives/cancel/$($b.id)" | Out-Null
+        }
+    }
+}
+Write-Host "Cleanup done."
+Write-Host ""
+
+Write-Host "============================================="
 Write-Host "TC-D2-M1: Successful test drive booking"
 Write-Host "Expected: 201 Created with booking object"
 Write-Host "============================================="
