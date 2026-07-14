@@ -1,12 +1,9 @@
 package com.evmarketplace.dto;
 
-import java.math.BigDecimal;
-
 public class AddToCartRequest {
     private Long userId;
     private Long vehicleId;
     private Integer quantity;
-    private BigDecimal unitPrice;
 
     public AddToCartRequest() {
         // default constructor required by Jackson
@@ -34,13 +31,5 @@ public class AddToCartRequest {
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
-    }
-
-    public BigDecimal getUnitPrice() {
-        return unitPrice;
-    }
-
-    public void setUnitPrice(BigDecimal unitPrice) {
-        this.unitPrice = unitPrice;
     }
 }

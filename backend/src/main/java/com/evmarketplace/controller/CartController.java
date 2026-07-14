@@ -2,7 +2,9 @@ package com.evmarketplace.controller;
 
 import com.evmarketplace.dto.AddToCartRequest;
 import com.evmarketplace.model.CartItem;
+import com.evmarketplace.service.AnalyticsService;
 import com.evmarketplace.service.CartService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,12 +16,16 @@ public class CartController {
     @Autowired
     private CartService cartService;
 
+    @Autowired
+    private AnalyticsService analyticsService;
+
     @PostMapping("/add")
-    public CartItem addToCart(@RequestBody AddToCartRequest request) {
-        return cartService.addToCart(
-            request.getUserId(), request.getVehicleId(),
-            request.getQuantity(), request.getUnitPrice()
+    public CartItem addToCart(@RequestBody AddToCartRequest request, HttpServletRequest httpRequest) {
+        CartItem item = cartService.addToCart(
+            request.getUserId(), request.getVehicleId(), request.getQuantity()
         );
+        analyticsService.recordVisitEvent(httpRequest.getRemoteAddr(), request.getVehicleId(), "CART");
+        return item;
     }
 
     @GetMapping("/{userId}")
