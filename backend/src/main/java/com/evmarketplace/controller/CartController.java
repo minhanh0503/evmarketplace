@@ -22,8 +22,7 @@ public class CartController {
     @PostMapping("/add")
     public CartItem addToCart(@RequestBody AddToCartRequest request, HttpServletRequest httpRequest) {
         CartItem item = cartService.addToCart(
-            request.getUserId(), request.getVehicleId(),
-            request.getQuantity(), request.getUnitPrice()
+            request.getUserId(), request.getVehicleId(), request.getQuantity()
         );
         analyticsService.recordVisitEvent(httpRequest.getRemoteAddr(), request.getVehicleId(), "CART");
         return item;
