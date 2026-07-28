@@ -61,6 +61,7 @@ public class CartItem {
 
     // convenience accessor so existing code (repositories, DTO mapping) that
     // expects a plain userId keeps working without further changes
+    @JsonIgnoreProperties({"password"})
     public Long getUserId() {
         return user != null ? user.getId() : null;
     }
@@ -74,6 +75,7 @@ public class CartItem {
     }
 
     // convenience accessor, same reasoning as getUserId()
+    @JsonIgnoreProperties({"password"})
     public Long getVehicleId() {
         return vehicle != null ? vehicle.getId() : null;
     }
