@@ -16,8 +16,9 @@ public class OrderItem {
     @JsonIgnore
     private Order order;
 
-    @Column(nullable = false)
-    private Long vehicleId;
+    @ManyToOne
+    @JoinColumn(name = "vehicle_id", nullable = false)
+    private Vehicle vehicle;
 
     @Column(nullable = false)
     private Integer quantity;
@@ -25,14 +26,13 @@ public class OrderItem {
     @Column(nullable = false)
     private BigDecimal unitPrice;
 
-    public OrderItem() 
-    {
-        // default constructor required by JPA}
+    public OrderItem() {
+        // default constructor required by JPA
     }
 
-    public OrderItem(Order order, Long vehicleId, Integer quantity, BigDecimal unitPrice) {
+    public OrderItem(Order order, Vehicle vehicle, Integer quantity, BigDecimal unitPrice) {
         this.order = order;
-        this.vehicleId = vehicleId;
+        this.vehicle = vehicle;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
     }
@@ -53,12 +53,17 @@ public class OrderItem {
         this.order = order;
     }
 
-    public Long getVehicleId() {
-        return vehicleId;
+    public Vehicle getVehicle() {
+        return vehicle;
     }
 
-    public void setVehicleId(Long vehicleId) {
-        this.vehicleId = vehicleId;
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
+    }
+
+    // convenience accessor so OrderController's analyticsService.recordVisitEvent(...) call keeps working
+    public Long getVehicleId() {
+        return vehicle != null ? vehicle.getId() : null;
     }
 
     public Integer getQuantity() {
