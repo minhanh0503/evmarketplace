@@ -4,6 +4,7 @@ import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import TestDrive from "./pages/TestDrive";
 import CarDetails from "./pages/CarDetails";
+import ChatWidget from "./components/ChatWidget";
 
 export default function App() {
   return (
