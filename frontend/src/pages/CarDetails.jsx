@@ -91,7 +91,6 @@ export default function CarDetails() {
           </div>
         </div>
 
-       
         <div className="bg-white mt-8 rounded-3xl shadow-sm border border-gray-100 p-8">
           <div className="flex justify-between items-start">
             <div>
@@ -193,7 +192,7 @@ export default function CarDetails() {
         </div>
 
         <button
-          onClick={() => alert(`Inquiry submitted for VIN: ${vehicle.vin}`)}
+          onClick={() => navigate(`/test-drive/${vehicle.id}`)}
           className="
           mt-8
           w-full
@@ -207,7 +206,7 @@ export default function CarDetails() {
           transition
         "
         >
-          Contact Seller
+          Book a Test Drive TODAY
         </button>
       </div>
     </div>
