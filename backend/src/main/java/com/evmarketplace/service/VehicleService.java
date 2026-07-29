@@ -7,6 +7,7 @@ import com.evmarketplace.dto.VehicleSearchRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -136,5 +137,9 @@ public class VehicleService {
         }
 
         return vehicles;
+    }
+
+    public List<Vehicle> getHotDeals() {
+        return vehicleRepository.findByDiscountGreaterThanOrderByDiscountDesc(BigDecimal.ZERO);
     }
 }

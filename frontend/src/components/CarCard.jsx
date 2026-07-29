@@ -7,6 +7,11 @@ export default function CarCard({ vehicle }) {
     navigate(`/vehicles/${vehicle.id}`);
   };
 
+  const price = Number(vehicle.price) || 0;
+  const discount = Number(vehicle.discount) || 0;
+  const finalPrice = price - discount;
+  const hasDiscount = discount > 0;
+
   return (
     <div
       className="
@@ -51,7 +56,7 @@ export default function CarCard({ vehicle }) {
           </span>
         </div>
 
-        {vehicle.discount > 0 && (
+        {hasDiscount && (
           <span
             className="
               absolute
@@ -66,7 +71,7 @@ export default function CarCard({ vehicle }) {
               font-bold
             "
           >
-            {vehicle.discount}% OFF
+            Save ${discount.toLocaleString()}
           </span>
         )}
       </div>
@@ -89,9 +94,20 @@ export default function CarCard({ vehicle }) {
 
           {/* Price */}
           <div className="mb-4">
-            <span className="text-2xl font-black text-gray-900">
-              ${vehicle.price.toLocaleString()}
-            </span>
+            {hasDiscount ? (
+              <div className="flex items-baseline gap-2 flex-wrap">
+                <span className="text-2xl font-black text-gray-900">
+                  ${finalPrice.toLocaleString()}
+                </span>
+                <span className="text-sm text-gray-400 line-through">
+                  ${price.toLocaleString()}
+                </span>
+              </div>
+            ) : (
+              <span className="text-2xl font-black text-gray-900">
+                ${price.toLocaleString()}
+              </span>
+            )}
           </div>
 
           {/* Quick Specs Grid */}
@@ -101,7 +117,7 @@ export default function CarCard({ vehicle }) {
                 Mileage
               </span>
               <span className="font-semibold text-gray-700 mt-0.5">
-                {vehicle.mileage.toLocaleString()} km
+                {Number(vehicle.mileage || 0).toLocaleString()} km
               </span>
             </div>
 

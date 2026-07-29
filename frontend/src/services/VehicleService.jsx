@@ -103,3 +103,14 @@ export async function deleteVehicle(id) {
         throw new Error("Failed to delete vehicle");
     }
 }
+
+// Get hot deals (vehicles with discount > 0)
+export async function getHotDeals() {
+  const response = await fetch(`${API_URL}/hot-deals`);
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch hot deals");
+  }
+
+  return response.json();
+}
