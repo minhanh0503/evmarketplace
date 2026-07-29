@@ -208,6 +208,25 @@ export default function CarDetails() {
         >
           Book a Test Drive TODAY
         </button>
+
+        <button
+          onClick={() => navigate(`/loan-calculator/${vehicle.id}`)}
+          className="
+            mt-4
+            w-full
+            bg-white
+            text-gray-950
+            border border-gray-950
+            py-4
+            rounded-2xl
+            font-semibold
+            text-lg
+            hover:bg-gray-50
+            transition
+          "
+        >
+          Estimate Monthly Payment
+        </button>
       </div>
     </div>
   );
