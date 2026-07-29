@@ -29,6 +29,12 @@ public class VehicleController {
         return vehicleService.addVehicle(vehicle);
     }
 
+    // GET hot deals (vehicles with discount > 0)
+    @GetMapping("/hot-deals")
+    public List<Vehicle> getHotDeals() {
+        return vehicleService.getHotDeals();
+    }
+
     // GET vehicle by ID
     @GetMapping("/{id}")
     public Vehicle getVehicle(@PathVariable Long id) {
