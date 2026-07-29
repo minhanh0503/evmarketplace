@@ -1,4 +1,12 @@
+import { useNavigate } from "react-router-dom";
+
 export default function CarCard({ vehicle }) {
+  const navigate = useNavigate();
+
+  const handleViewDetails = () => {
+    navigate(`/vehicles/${vehicle.id}`);
+  };
+
   return (
     <div
       className="
@@ -110,6 +118,7 @@ export default function CarCard({ vehicle }) {
 
         {/* Action Button */}
         <button
+          onClick={handleViewDetails}
           className="
             mt-6
             w-full
