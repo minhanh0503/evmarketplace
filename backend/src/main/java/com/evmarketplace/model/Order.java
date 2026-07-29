@@ -1,5 +1,6 @@
 package com.evmarketplace.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -15,8 +16,10 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"password"})
+    private User user;
 
     @Column(nullable = false)
     private BigDecimal totalAmount;
@@ -33,22 +36,25 @@ public class Order {
         // default constructor required by JPA
     }
 
-    // getters and setters
     public Long getId() {
         return id;
-
     }
 
     public void setId(Long id) {
         this.id = id;
     }
 
-    public Long getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    // convenience accessor so existing code that expects a plain userId keeps working
+    public Long getUserId() {
+        return user != null ? user.getId() : null;
     }
 
     public BigDecimal getTotalAmount() {

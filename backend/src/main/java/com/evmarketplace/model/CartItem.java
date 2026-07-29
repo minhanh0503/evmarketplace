@@ -1,5 +1,6 @@
 package com.evmarketplace.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -11,11 +12,14 @@ public class CartItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({"password"})
+    private User user;
 
-    @Column(nullable = false)
-    private Long vehicleId;
+    @ManyToOne
+    @JoinColumn(name = "vehicle_id", nullable = false)
+    private Vehicle vehicle;
 
     @Column(nullable = false)
     private Integer quantity;
@@ -31,15 +35,14 @@ public class CartItem {
         // default constructor required by JPA
     }
 
-    public CartItem(Long userId, Long vehicleId, Integer quantity, BigDecimal unitPrice) {
-        this.userId = userId;
-        this.vehicleId = vehicleId;
+    public CartItem(User user, Vehicle vehicle, Integer quantity, BigDecimal unitPrice) {
+        this.user = user;
+        this.vehicle = vehicle;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
         this.addedAt = LocalDateTime.now();
     }
 
-    // getters and setters
     public Long getId() {
         return id;
     }
@@ -48,20 +51,33 @@ public class CartItem {
         this.id = id;
     }
 
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    // convenience accessor so existing code (repositories, DTO mapping) that
+    // expects a plain userId keeps working without further changes
+    @JsonIgnoreProperties({"password"})
     public Long getUserId() {
-        return userId;
+        return user != null ? user.getId() : null;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public Vehicle getVehicle() {
+        return vehicle;
     }
 
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
+    }
+
+    // convenience accessor, same reasoning as getUserId()
+    @JsonIgnoreProperties({"password"})
     public Long getVehicleId() {
-        return vehicleId;
-    }
-
-    public void setVehicleId(Long vehicleId) {
-        this.vehicleId = vehicleId;
+        return vehicle != null ? vehicle.getId() : null;
     }
 
     public Integer getQuantity() {
