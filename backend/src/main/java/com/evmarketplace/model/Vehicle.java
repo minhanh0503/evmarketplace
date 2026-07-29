@@ -7,6 +7,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+import java.util.List;
+import java.util.ArrayList;
+import jakarta.persistence.FetchType;
 
     @Entity
     @Table(name = "vehicles")
@@ -46,6 +51,14 @@ import java.math.BigDecimal;
 
         @Column(nullable = false)
         private BigDecimal discount;
+
+        @OneToMany(
+            mappedBy = "vehicle",
+            cascade = CascadeType.ALL,
+                orphanRemoval = true,
+            fetch = FetchType.EAGER
+        )
+        private List<VehicleImage> images = new ArrayList<>();
         
         public Vehicle() {
             // default constructor required by JPA
@@ -150,6 +163,14 @@ import java.math.BigDecimal;
 
         public void setDiscount(BigDecimal discount) {
             this.discount = discount;
+        }
+
+        public List<VehicleImage> getImages() {
+            return images;
+        }
+
+        public void setImages(List<VehicleImage> images) {
+            this.images = images;
         }
         
         // Override toString() method for better logging and debugging
