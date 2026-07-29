@@ -71,7 +71,7 @@ export default function CarCard({ vehicle }) {
         )}
       </div>
 
-      {/* Vehicle Details Details */}
+      {/* Vehicle Details */}
       <div className="p-5 flex flex-col flex-grow justify-between">
         <div>
           {/* Make, Model & Year */}
