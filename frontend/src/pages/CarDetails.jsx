@@ -2,6 +2,11 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getVehicleById } from "../services/VehicleService";
 import Car360Viewer from "../components/Car360View";
+import CarCard from "../components/CarCard";
+import {
+  getReviewsByVehicleId,
+  getAverageRating,
+} from "../services/ReviewService";
 
 export default function CarDetails() {
   const { id } = useParams();
@@ -10,6 +15,8 @@ export default function CarDetails() {
   const [vehicle, setVehicle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [averageRating, setAverageRating] = useState(0);
 
   useEffect(() => {
     const fetchCarDetails = async () => {
@@ -17,9 +24,12 @@ export default function CarDetails() {
         setLoading(true);
         if (!id) return;
 
-        // Fetch vehicle by ID from your Spring Boot backend
         const data = await getVehicleById(id);
         setVehicle(data);
+        const reviewData = await getReviewsByVehicleId(id);
+        setReviews(reviewData);
+        const rating = await getAverageRating(id);
+        setAverageRating(rating);
       } catch (err) {
         console.error("Error fetching vehicle details:", err);
         setError("Failed to load vehicle details.");
@@ -90,7 +100,11 @@ export default function CarDetails() {
             )}
           </div>
         </div>
-
+        <div className="text-yellow-500 text-lg">
+          {"⭐".repeat(Math.round(averageRating))}
+        </div>
+        <span className="font-semibold">{averageRating.toFixed(1)}</span>
+        <span className="text-gray-500">({reviews.length} Reviews)</span>
         <div className="bg-white mt-8 rounded-3xl shadow-sm border border-gray-100 p-8">
           <div className="flex justify-between items-start">
             <div>
@@ -152,7 +166,6 @@ export default function CarDetails() {
             </div>
           </div>
         </div>
-
         <div
           className="
         bg-white mt-8
@@ -189,6 +202,26 @@ export default function CarDetails() {
 
             <Specification title="Condition" value={vehicle.condition} />
           </div>
+        </div>
+        <div className="bg-white mt-8 rounded-3xl shadow-sm border border-gray-100 p-8">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">Customer Reviews</h2>
+
+            <span className="text-gray-500">{reviews.length} Reviews</span>
+          </div>
+
+          {reviews.length > 0 ? (
+            reviews.map((review) => (
+              <Review
+                key={review.id}
+                name={review.reviewerName}
+                rating={review.rating}
+                comment={review.comment}
+              />
+            ))
+          ) : (
+            <p className="text-gray-500">No reviews yet.</p>
+          )}
         </div>
 
         <button
@@ -227,6 +260,15 @@ export default function CarDetails() {
         >
           Estimate Monthly Payment
         </button>
+        <h2 className="text-2xl font-bold mt-10 mb-6">Similar Vehicles</h2>
+
+        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <CarCard />
+
+          <CarCard />
+
+          <CarCard />
+        </div> */}
       </div>
     </div>
   );
@@ -245,6 +287,18 @@ export default function CarDetails() {
         >
           {value}
         </p>
+      </div>
+    );
+  }
+  function Review({ name, rating, comment }) {
+    return (
+      <div className="border-b py-6 last:border-none">
+        <div className="flex justify-between">
+          <h3 className="font-semibold">{name}</h3>
+          <span className="text-yellow-500">{"⭐".repeat(rating)}</span>
+        </div>
+
+        <p className="mt-3 text-gray-600">{comment}</p>
       </div>
     );
   }

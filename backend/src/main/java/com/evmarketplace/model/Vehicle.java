@@ -60,6 +60,14 @@ import jakarta.persistence.FetchType;
         )
         private List<VehicleImage> images = new ArrayList<>();
         
+        @OneToMany(
+            mappedBy = "vehicle",
+                    cascade = CascadeType.ALL,
+                            orphanRemoval = true,
+                fetch = FetchType.EAGER
+        )
+        private List<VehicleReview> reviews = new ArrayList<>();
+
         public Vehicle() {
             // default constructor required by JPA
         }
@@ -172,6 +180,15 @@ import jakarta.persistence.FetchType;
         public void setImages(List<VehicleImage> images) {
             this.images = images;
         }
+
+        public List<VehicleReview> getReviews() {
+            return reviews;
+        }
+
+        public void setReviews(List<VehicleReview> reviews) {
+            this.reviews = reviews;
+        }
+
         
         // Override toString() method for better logging and debugging
         @Override
