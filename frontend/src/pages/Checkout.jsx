@@ -173,7 +173,7 @@ export default function Checkout() {
             <button
               onClick={handlePlaceOrder}
               disabled={!isFormValid || loading}
-              className="w-full bg-green-600 text-white py-4 rounded-2xl font-semibold text-lg hover:bg-green-700 transition disabled:opacity-50"
+              className="w-full bg-gray-950 text-white py-4 rounded-2xl font-semibold text-lg hover:bg-blue-600 transition disabled:opacity-50"
             >
               {loading ? "Placing order..." : "Confirm Order"}
             </button>

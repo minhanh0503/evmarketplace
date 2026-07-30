@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   getAvailableSlots,
   bookTestDrive,
@@ -22,6 +22,8 @@ export default function TestDrive() {
   const [booking, setBooking] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
+  const navigate = useNavigate();
 
   const loadSlots = async () => {
     try {
@@ -104,6 +106,13 @@ export default function TestDrive() {
 
   return (
     <div className="min-h-screen bg-gray-50 px-6 py-10">
+      <button
+        onClick={() => navigate(-1)}
+        className="mb-6 text-sm font-medium text-gray-600 hover:text-gray-900"
+      >
+        Back to vehicle
+      </button>
+
       <h1 className="text-3xl font-bold text-gray-900 mb-2">
         Book a Test Drive
       </h1>
@@ -119,7 +128,7 @@ export default function TestDrive() {
         />
         <button
           onClick={loadBookings}
-          className="bg-gray-900 text-white px-4 py-2 rounded"
+          className="bg-gray-950 hover:bg-blue-600 text-white px-4 py-2 rounded transition"
         >
           View My Bookings
         </button>
@@ -148,7 +157,7 @@ export default function TestDrive() {
               onClick={() => setSelectedSlot(slot)}
               className={`px-3 py-2 rounded border text-sm ${
                 selectedSlot === slot
-                  ? "bg-gray-900 text-white border-gray-900"
+                  ? "bg-gray-950 text-white border-gray-950"
                   : "bg-white text-gray-700 border-gray-300 hover:border-gray-500"
               }`}
             >
@@ -160,7 +169,7 @@ export default function TestDrive() {
         <button
           onClick={handleBook}
           disabled={booking || !selectedSlot}
-          className="bg-gray-900 text-white px-4 py-2 rounded disabled:opacity-50"
+          className="bg-gray-950 hover:bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50 transition"
         >
           {booking ? "Booking..." : "Confirm Booking"}
         </button>
