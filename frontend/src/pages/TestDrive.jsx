@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import TestDriveCalendar from "../components/TestDriveCalendar";
 import {
   getAvailableSlots,
   bookTestDrive,
@@ -13,8 +12,7 @@ import {
 // same pattern as Cart.jsx, since login/session handling doesn't exist yet.
 export default function TestDrive() {
   const { vehicleId } = useParams();
-  const navigate = useNavigate();
-  const [selectedDate, setSelectedDate] = useState(new Date());
+
   const [userId, setUserId] = useState("");
   const [slots, setSlots] = useState([]);
   const [selectedSlot, setSelectedSlot] = useState(null);
@@ -105,7 +103,6 @@ export default function TestDrive() {
       minute: "2-digit",
     });
   };
-  console.log("selectedSlot:", selectedSlot);
 
   return (
     <div className="min-h-screen bg-gray-50 px-6 py-10">
@@ -133,86 +130,28 @@ export default function TestDrive() {
           onClick={loadBookings}
           className="bg-gray-950 hover:bg-blue-600 text-white px-4 py-2 rounded transition"
         >
-          Back to vehicle detail
+          View My Bookings
         </button>
+      </div>
 
-        {/* Header Card */}
-        <div
-          className="
-          bg-white
-          rounded-3xl
-          shadow-sm
-          border
-          border-gray-100
-          p-8
-          mb-8
-        "
-        >
-          <h1
-            className="
-            text-4xl
-            font-bold
-            text-gray-900
-          "
-          >
-            Book a Test Drive
-          </h1>
+      {error && <p className="text-red-600 mb-4">{error}</p>}
+      {successMessage && (
+        <p className="text-green-600 mb-4">{successMessage}</p>
+      )}
 
-          <p className="text-gray-500 mt-2">
-            Schedule your test drive and experience this vehicle in person.
+      <div className="bg-white p-6 rounded shadow mb-8">
+        <h2 className="text-xl font-semibold mb-4">Available Time Slots</h2>
+
+        {loadingSlots && <p className="text-gray-600">Loading slots...</p>}
+
+        {!loadingSlots && slots.length === 0 && (
+          <p className="text-gray-600">
+            No available slots for this vehicle right now.
           </p>
+        )}
 
-          <div
-            className="
-            mt-5
-            inline-flex
-            items-center
-            bg-blue-50
-            text-blue-600
-            px-4
-            py-2
-            rounded-full
-            text-sm
-            font-semibold
-          "
-          >
-            Vehicle ID: {vehicleId}
-          </div>
-        </div>
-
-        {/* User Section */}
-        <div
-          className="
-          bg-white
-          rounded-3xl
-          shadow-sm
-          border
-          border-gray-100
-          p-8
-          mb-8
-        "
-        >
-          <h2 className="text-2xl font-bold mb-5">Customer Information</h2>
-
-          <div className="flex flex-col md:flex-row gap-4">
-            <input
-              type="text"
-              placeholder="Enter your user ID"
-              value={userId}
-              onChange={(e) => setUserId(e.target.value)}
-              className="
-              flex-1
-              border
-              border-gray-200
-              rounded-xl
-              px-4
-              py-3
-              focus:outline-none
-              focus:ring-2
-              focus:ring-blue-500
-            "
-            />
-
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">
+          {slots.map((slot) => (
             <button
               key={slot}
               onClick={() => setSelectedSlot(slot)}
@@ -222,150 +161,61 @@ export default function TestDrive() {
                   : "bg-white text-gray-700 border-gray-300 hover:border-gray-500"
               }`}
             >
-              View My Bookings
+              {formatSlot(slot)}
             </button>
-          </div>
+          ))}
         </div>
 
-        {/* Messages */}
-        {error && (
-          <div className="bg-red-50 text-red-600 rounded-xl px-5 py-3 mb-6">
-            {error}
-          </div>
-        )}
-
-        {successMessage && (
-          <div className="bg-green-50 text-green-600 rounded-xl px-5 py-3 mb-6">
-            {successMessage}
-          </div>
-        )}
-
-        {/* Available Slots */}
-        <div
-          className="
-          bg-white
-          rounded-3xl
-          shadow-sm
-          border
-          border-gray-100
-          p-8
-          mb-8
-        "
         <button
           onClick={handleBook}
           disabled={booking || !selectedSlot}
           className="bg-gray-950 hover:bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50 transition"
         >
-          <h2 className="text-2xl font-bold mb-6">Available Time Slots</h2>
+          {booking ? "Booking..." : "Confirm Booking"}
+        </button>
+      </div>
 
-          {loadingSlots && <p className="text-gray-500">Loading slots...</p>}
+      <div className="bg-white p-6 rounded shadow">
+        <h2 className="text-xl font-semibold mb-4">My Bookings</h2>
 
-          {!loadingSlots && slots.length === 0 && (
-            <p className="text-gray-500">
-              No available slots for this vehicle right now.
-            </p>
-          )}
+        {bookings.length === 0 && (
+          <p className="text-gray-600">
+            No bookings loaded yet. Enter your user ID above and click
+            &quot;View My Bookings&quot;.
+          </p>
+        )}
 
-          <TestDriveCalendar
-            slots={slots}
-            selectedDate={selectedDate}
-            setSelectedDate={setSelectedDate}
-            selectedSlot={selectedSlot}
-            setSelectedSlot={setSelectedSlot}
-          />
-
-          <button
-            onClick={handleBook}
-            disabled={booking || !selectedSlot}
-            className="
-            w-full
-            bg-gray-950
-            text-white
-            py-4
-            mt-8
-            rounded-2xl
-            font-semibold
-            text-lg
-            hover:bg-blue-600
-            transition
-          
-          "
-          >
-            {booking ? "Booking..." : "Confirm Test Drive"}
-          </button>
-        </div>
-
-        {/* Previous Bookings */}
-        <div
-          className="
-          bg-white
-          rounded-3xl
-          shadow-sm
-          border
-          border-gray-100
-          p-8
-        "
-        >
-          <h2 className="text-2xl font-bold mb-6">My Bookings</h2>
-
-          {bookings.length === 0 ? (
-            <p className="text-gray-500">No bookings loaded yet.</p>
-          ) : (
-            <div className="space-y-4">
-              {bookings.map((b) => (
-                <div
-                  key={b.id}
-                  className="
-                  flex
-                  justify-between
-                  items-center
-                  bg-gray-50
-                  rounded-2xl
-                  p-5
-                "
+        <ul className="space-y-3">
+          {bookings.map((b) => (
+            <li
+              key={b.id}
+              className="flex justify-between items-center bg-gray-50 p-4 rounded"
+            >
+              <div>
+                <p className="font-medium">
+                  Vehicle {b.vehicleId} &middot; {formatSlot(b.bookingDateTime)}
+                </p>
+                <p
+                  className={`text-sm ${
+                    b.status === "CONFIRMED"
+                      ? "text-green-600"
+                      : "text-gray-400"
+                  }`}
                 >
-                  <div>
-                    <p className="font-semibold text-gray-900">
-                      Vehicle {b.vehicleId}
-                    </p>
-
-                    <p className="text-gray-500 text-sm mt-1">
-                      {formatSlot(b.bookingDateTime)}
-                    </p>
-
-                    <p
-                      className={`
-                      text-sm
-                      mt-2
-                      font-medium
-                      ${
-                        b.status === "CONFIRMED"
-                          ? "text-green-600"
-                          : "text-gray-400"
-                      }
-                    `}
-                    >
-                      {b.status}
-                    </p>
-                  </div>
-
-                  {b.status === "CONFIRMED" && (
-                    <button
-                      onClick={() => handleCancel(b.id)}
-                      className="
-                      text-red-600
-                      font-medium
-                      hover:underline
-                    "
-                    >
-                      Cancel
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+                  {b.status}
+                </p>
+              </div>
+              {b.status === "CONFIRMED" && (
+                <button
+                  onClick={() => handleCancel(b.id)}
+                  className="text-red-600 text-sm hover:underline"
+                >
+                  Cancel
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );
