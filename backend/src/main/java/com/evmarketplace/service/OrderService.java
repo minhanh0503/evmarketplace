@@ -37,7 +37,8 @@ public class OrderService {
     public Order checkout(Long userId) {
         Objects.requireNonNull(userId, "userId must not be null");
 
-        List<CartItem> cartItems = cartService.getCartByUser(userId);
+        List<CartItem> cartItems =
+                cartService.getCartByUser(userId);
 
         if (cartItems.isEmpty()) {
             throw new IllegalStateException(

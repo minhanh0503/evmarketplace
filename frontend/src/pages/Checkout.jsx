@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Link,
   useLocation,
@@ -6,19 +6,22 @@ import {
 } from "react-router-dom";
 import { checkout } from "../services/OrderService";
 import { getStoredUser } from "../services/AuthService";
-import { formatCurrency } from "../utils/pricing";
+import { getCart } from "../services/CartService";
+import {
+  calculateCheckoutAmounts,
+  formatCurrency,
+} from "../utils/pricing";
 
 export default function Checkout() {
   const location = useLocation();
   const navigate = useNavigate();
   const storedUser = getStoredUser();
+  const checkoutPreview = location.state;
 
   const userId =
     location.state?.userId?.toString() ||
     storedUser?.userId?.toString() ||
     "";
-
-  const checkoutPreview = location.state;
 
   const [billingName, setBillingName] = useState(
     storedUser
@@ -38,6 +41,34 @@ export default function Checkout() {
   const [order, setOrder] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const [checkoutAmounts, setCheckoutAmounts] = useState({
+    subtotal: Number(checkoutPreview?.subtotal) || 0,
+    hst: Number(checkoutPreview?.hst) || 0,
+    total: Number(checkoutPreview?.total) || 0,
+  });
+
+  useEffect(() => {
+    if (!userId) return;
+
+    getCart(userId)
+      .then((items) => {
+        setCheckoutAmounts(
+          calculateCheckoutAmounts(items),
+        );
+      })
+      .catch((err) => {
+        setError(
+          err.message || "Unable to load order summary.",
+        );
+      });
+  }, [userId]);
+
+  const {
+    subtotal,
+    hst,
+    total: totalWithTax,
+  } = checkoutAmounts;
 
   const effectiveShippingAddress = sameAsBilling
     ? billingAddress
@@ -64,7 +95,7 @@ export default function Checkout() {
       setLoading(true);
       setError("");
 
-      // Payment details remain client-side and are not stored.
+      // Payment information is not transmitted or stored.
       const result = await checkout(userId);
       setOrder(result);
     } catch (err) {
@@ -119,33 +150,6 @@ export default function Checkout() {
           <p className="text-sm text-gray-500 mb-6">
             Signed in as {storedUser.email}
           </p>
-        )}
-
-        {!order && checkoutPreview?.subtotal != null && (
-          <div className="mb-6 space-y-2 rounded-2xl bg-white p-6 shadow-sm border border-gray-100">
-            <h2 className="mb-3 text-lg font-semibold">
-              Order Summary
-            </h2>
-
-            <div className="flex justify-between text-gray-700">
-              <span>Subtotal</span>
-              <span>
-                {formatCurrency(checkoutPreview.subtotal)}
-              </span>
-            </div>
-
-            <div className="flex justify-between text-gray-700">
-              <span>HST (13%)</span>
-              <span>{formatCurrency(checkoutPreview.hst)}</span>
-            </div>
-
-            <div className="flex justify-between border-t pt-2 text-xl font-semibold">
-              <span>Total</span>
-              <span>
-                {formatCurrency(checkoutPreview.total)}
-              </span>
-            </div>
-          </div>
         )}
 
         {!order && (
@@ -276,6 +280,27 @@ export default function Checkout() {
               </div>
             </div>
 
+            <div className="border-t border-gray-200 pt-4 text-sm space-y-2">
+              <h2 className="text-lg font-bold text-gray-900 mb-3">
+                Order Summary
+              </h2>
+
+              <div className="flex justify-between text-gray-600">
+                <span>Subtotal</span>
+                <span>{formatCurrency(subtotal)}</span>
+              </div>
+
+              <div className="flex justify-between text-gray-600">
+                <span>HST (13%)</span>
+                <span>{formatCurrency(hst)}</span>
+              </div>
+
+              <div className="flex justify-between font-bold text-gray-900 text-base border-t pt-2">
+                <span>Total</span>
+                <span>{formatCurrency(totalWithTax)}</span>
+              </div>
+            </div>
+
             {error && (
               <p className="text-red-600 text-sm">{error}</p>
             )}
@@ -346,7 +371,11 @@ export default function Checkout() {
                     <span className="font-medium text-gray-900">
                       Date:
                     </span>{" "}
-                    {new Date(order.orderDate).toLocaleString()}
+                    {order.orderDate
+                      ? new Date(
+                          order.orderDate,
+                        ).toLocaleString()
+                      : "Not available"}
                   </p>
 
                   <p>
@@ -387,7 +416,8 @@ export default function Checkout() {
 
                         <span className="font-medium">
                           {formatCurrency(
-                            item.unitPrice * item.quantity,
+                            Number(item.unitPrice) *
+                              Number(item.quantity),
                           )}
                         </span>
                       </div>
