@@ -10,13 +10,16 @@ import "../styles/swiper.css";
 import "swiper/css";
 import "swiper/css/navigation";
 import { searchVehicles, getHotDeals } from "../services/VehicleService";
+import { useCompare } from "../contexts/CompareContext";
 
 export default function Home() {
   const [vehicles, setVehicles] = useState([]);
   const [hotDeals, setHotDeals] = useState([]);
   const [loading, setLoading] = useState(true);
+  // const [compareVehicles, setCompareVehicles] = useState([]);
   const navigate = useNavigate();
 
+  const { handleCompare, compareVehicles, removeCompar, clearCompare } = useCompare();
   const [filters, setFilters] = useState({
     keyword: "",
     make: "",
@@ -127,7 +130,13 @@ export default function Home() {
                 >
                   {hotDeals.map((vehicle) => (
                     <SwiperSlide key={vehicle.id}>
-                      <CarCard vehicle={vehicle} />
+                      <CarCard
+                        vehicle={vehicle}
+                        onCompare={handleCompare}
+                        isCompared={compareVehicles.some(
+                          (v) => v.id === vehicle.id,
+                        )}
+                      />
                     </SwiperSlide>
                   ))}
                 </Swiper>
@@ -157,7 +166,73 @@ export default function Home() {
           />
         </div>
 
-        <CarList vehicles={vehicles} />
+        <CarList
+          vehicles={vehicles}
+          onCompare={handleCompare}
+          compareVehicles={compareVehicles}
+        />
+        {compareVehicles.length > 0 && (
+          <div
+            className="
+              fixed bottom-6 left-1/2 -translate-x-1/2
+              bg-white border border-gray-200
+              rounded-2xl shadow-xl
+              p-5
+              w-[420px]
+              z-50
+            "
+          >
+            <h3 className="font-semibold text-lg mb-4">Compare Vehicles</h3>
+
+            <div className="space-y-3">
+              {compareVehicles.map((vehicle) => (
+                <div
+                  key={vehicle.id}
+                  className="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3"
+                >
+                  <span className="font-medium">
+                    {vehicle.make} {vehicle.model}
+                  </span>
+
+                  <button
+                    onClick={() => removeCompare(vehicle.id)}
+                    className="
+                    w-8 h-8
+                    rounded-full
+                    text-gray-500
+                    hover:bg-red-100
+                    hover:text-red-600
+                    transition
+                  "
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <button
+              disabled={compareVehicles.length < 2}
+              onClick={() => {
+                navigate("/compare", {
+                  state: {
+                    vehicles: compareVehicles,
+                  },
+                });
+                clearCompare();
+              }}
+              className={`mt-5 w-full py-3 rounded-xl font-semibold transition
+                ${
+                  compareVehicles.length === 2
+                    ? "bg-blue-600 text-white hover:bg-blue-700"
+                    : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                }
+              `}
+            >
+              Compare Now
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

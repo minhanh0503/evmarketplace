@@ -10,6 +10,7 @@ import {
   createVehicleReview,
 } from "../services/ReviewService";
 import { getStoredUser } from "../services/AuthService";
+import { useCompare } from "../contexts/CompareContext";
 
 export default function CarDetails() {
   const { id } = useParams();
@@ -28,6 +29,13 @@ export default function CarDetails() {
   const [submittingReview, setSubmittingReview] = useState(false);
   const [reviewError, setReviewError] = useState("");
   const [reviewSuccess, setReviewSuccess] = useState("");
+
+  const {
+    handleCompare,
+    compareVehicles,
+    removeCompare,
+    clearCompare = [],
+  } = useCompare();
 
   const loadReviews = async () => {
     if (!id) return;
@@ -69,26 +77,26 @@ export default function CarDetails() {
   };
 
   const handleAddToCart = async () => {
-  const stored = getStoredUser();
-  const userId = stored?.userId?.toString();
+    const stored = getStoredUser();
+    const userId = stored?.userId?.toString();
 
-  if (!userId) {
-    alert("Please sign in to add items to your cart.");
-    navigate("/login");
-    return;
-  }
+    if (!userId) {
+      alert("Please sign in to add items to your cart.");
+      navigate("/login");
+      return;
+    }
 
-  try {
-    setAddingToCart(true);
-    await addToCart(userId, vehicle.id, 1);
-    navigate("/cart", { state: { userId } });
-  } catch (err) {
-    console.error("Error adding to cart:", err);
-    alert("Could not add this vehicle to your cart. Please try again.");
-  } finally {
-    setAddingToCart(false);
-  }
-};
+    try {
+      setAddingToCart(true);
+      await addToCart(userId, vehicle.id, 1);
+      navigate("/cart", { state: { userId } });
+    } catch (err) {
+      console.error("Error adding to cart:", err);
+      alert("Could not add this vehicle to your cart. Please try again.");
+    } finally {
+      setAddingToCart(false);
+    }
+  };
 
   useEffect(() => {
     const fetchCarDetails = async () => {
@@ -154,7 +162,7 @@ export default function CarDetails() {
       <div className="max-w-6xl mx-auto">
         {/* Back Button */}
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/")}
           className="mb-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl 
              bg-white border border-gray-200 text-gray-700 font-medium text-sm
              shadow-sm hover:shadow-md hover:bg-gray-50 hover:text-gray-900
@@ -377,6 +385,29 @@ export default function CarDetails() {
         </div>
 
         <button
+          onClick={() => handleCompare(vehicle)}
+          disabled={compareVehicles?.some((v) => v.id === vehicle.id)}
+          className={`
+            mt-8
+            w-full
+            py-4
+            rounded-2xl
+            font-semibold
+            text-lg
+            transition
+
+            ${
+              compareVehicles?.some((v) => v.id === vehicle.id)
+                ? "bg-green-50 text-green-700 border border-green-300 cursor-default"
+                : "bg-white text-gray-900 border border-gray-300 hover:bg-gray-100"
+            }
+          `}
+        >
+          {compareVehicles?.some((v) => v.id === vehicle.id)
+            ? "✓ Added to Compare"
+            : "Compare Vehicle"}
+        </button>
+        <button
           onClick={handleAddToCart}
           disabled={addingToCart}
           className="
@@ -444,11 +475,79 @@ export default function CarDetails() {
             "
           >
             {similarVehicles.map((vehicle) => (
-              <CarCard key={vehicle.id} vehicle={vehicle} />
+              <CarCard
+                key={vehicle.id}
+                vehicle={vehicle}
+                onCompare={handleCompare}
+                isCompared={compareVehicles.some((v) => v.id === vehicle.id)}
+              />
             ))}
           </div>
         ) : (
           <p className="text-gray-500">No similar vehicles available.</p>
+        )}
+        {compareVehicles.length > 0 && (
+          <div
+            className="
+              fixed bottom-6 left-1/2 -translate-x-1/2
+              bg-white border border-gray-200
+              rounded-2xl shadow-xl
+              p-5
+              w-[420px]
+              z-50
+            "
+          >
+            <h3 className="font-semibold text-lg mb-4">Compare Vehicles</h3>
+
+            <div className="space-y-3">
+              {compareVehicles.map((vehicle) => (
+                <div
+                  key={vehicle.id}
+                  className="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3"
+                >
+                  <span className="font-medium">
+                    {vehicle.make} {vehicle.model}
+                  </span>
+
+                  <button
+                    onClick={() => removeCompare(vehicle.id)}
+                    className="
+                    w-8 h-8
+                    rounded-full
+                    text-gray-500
+                    hover:bg-red-100
+                    hover:text-red-600
+                    transition
+                  "
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <button
+              disabled={compareVehicles.length < 2}
+              onClick={() => {
+                navigate("/compare", {
+                  state: {
+                    vehicles: compareVehicles,
+                  },
+                });
+
+                clearCompare();
+              }}
+              className={`mt-5 w-full py-3 rounded-xl font-semibold transition
+                ${
+                  compareVehicles.length === 2
+                    ? "bg-blue-600 text-white hover:bg-blue-700"
+                    : "bg-gray-200 text-gray-500 cursor-not-allowed"
+                }
+              `}
+            >
+              Compare Now
+            </button>
+          </div>
         )}
       </div>
     </div>
