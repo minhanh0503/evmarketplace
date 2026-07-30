@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getVehicleById } from "../services/VehicleService";
+import { getVehicleById, getAllVehicles } from "../services/VehicleService";
 import Car360Viewer from "../components/Car360View";
 import CarCard from "../components/CarCard";
 import {
@@ -17,6 +17,7 @@ export default function CarDetails() {
   const [error, setError] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [averageRating, setAverageRating] = useState(0);
+  const [similarVehicles, setSimilarVehicles] = useState([]);
 
   useEffect(() => {
     const fetchCarDetails = async () => {
@@ -30,6 +31,13 @@ export default function CarDetails() {
         setReviews(reviewData);
         const rating = await getAverageRating(id);
         setAverageRating(rating);
+        const allVehicles = await getAllVehicles();
+        const similar = allVehicles
+          .filter((v) => v.id !== Number(id))
+          .filter((v) => v.make === data.make || v.condition === data.condition)
+          .slice(0, 4);
+
+        setSimilarVehicles(similar);
       } catch (err) {
         console.error("Error fetching vehicle details:", err);
         setError("Failed to load vehicle details.");
@@ -262,13 +270,23 @@ export default function CarDetails() {
         </button>
         <h2 className="text-2xl font-bold mt-10 mb-6">Similar Vehicles</h2>
 
-        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <CarCard />
-
-          <CarCard />
-
-          <CarCard />
-        </div> */}
+        {similarVehicles.length > 0 ? (
+          <div
+            className="
+      grid
+      grid-cols-1
+      md:grid-cols-2
+      lg:grid-cols-4
+      gap-6
+    "
+          >
+            {similarVehicles.map((vehicle) => (
+              <CarCard key={vehicle.id} vehicle={vehicle} />
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500">No similar vehicles available.</p>
+        )}
       </div>
     </div>
   );
