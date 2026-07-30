@@ -105,11 +105,23 @@ public class VehicleService {
                     .collect(Collectors.toList());
         }
 
-
+        
         // sorting
         if (req.getSort() != null) {
-
             switch (req.getSort()) {
+                case "mileageAsc":
+                    vehicles = vehicles.stream()
+                            .sorted((a, b) -> a.getMileage() - b.getMileage())
+                            .collect(Collectors.toList());
+                    break;
+
+
+                case "mileageDesc":
+                    vehicles = vehicles.stream()
+                            .sorted((a, b) -> b.getMileage() - a.getMileage())
+                            .collect(Collectors.toList());
+                    break;
+
 
                 case "priceAsc":
                     vehicles = vehicles.stream()
