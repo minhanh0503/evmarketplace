@@ -178,6 +178,7 @@ public class ChatbotService {
 
     // Checks the live catalog for a make name mentioned in the message,
     // rather than hardcoding a make list that could drift from the seeded data.
+    @SuppressWarnings("null")
     private String detectKnownMake(String message) {
         return vehicleRepository.findAll().stream()
                 .map(Vehicle::getMake)

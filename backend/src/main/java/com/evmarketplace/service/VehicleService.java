@@ -20,10 +20,12 @@ public class VehicleService {
         return vehicleRepository.findAll();
     }
 
+    @SuppressWarnings("null")
     public Vehicle addVehicle(Vehicle vehicle) {
         return vehicleRepository.save(vehicle);
     }
 
+    @SuppressWarnings("null")
     public Vehicle getVehicleById(Long id) {
         return vehicleRepository.findById(id)
                 .orElseThrow(() ->
@@ -31,6 +33,7 @@ public class VehicleService {
                 );
     }
 
+    @SuppressWarnings("null")
     public void deleteVehicle(Long id) {
         vehicleRepository.deleteById(id);
     }
