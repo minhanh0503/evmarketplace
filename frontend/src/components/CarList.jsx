@@ -1,6 +1,6 @@
 import CarCard from "./CarCard";
 
-export default function CarList({ vehicles }) {
+export default function CarList({ vehicles, onCompare, compareVehicles }) {
   if (vehicles.length === 0) {
     return <p>No vehicles found.</p>;
   }
@@ -27,7 +27,12 @@ export default function CarList({ vehicles }) {
         "
       >
         {vehicles.map((vehicle) => (
-          <CarCard key={vehicle.id} vehicle={vehicle} />
+          <CarCard
+            key={vehicle.id}
+            vehicle={vehicle}
+            onCompare={onCompare}
+            isCompared={compareVehicles.some((v) => v.id === vehicle.id)}
+          />
         ))}
       </div>
     </div>

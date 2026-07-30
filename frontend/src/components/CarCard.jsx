@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-export default function CarCard({ vehicle }) {
+export default function CarCard({ vehicle, onCompare, isCompared }) {
   const navigate = useNavigate();
 
   const handleViewDetails = () => {
@@ -151,6 +151,29 @@ export default function CarCard({ vehicle }) {
           "
         >
           View Details
+        </button>
+        <button
+          onClick={() => onCompare(vehicle)}
+          disabled={isCompared}
+          className={`
+            mt-3
+            w-full
+            py-3
+            rounded-xl
+            text-sm
+            font-semibold
+            border
+            transition-all
+            duration-200
+
+            ${
+              isCompared
+                ? "bg-green-50 border-green-300 text-green-700 cursor-default"
+                : "bg-white border-gray-300 text-gray-700 hover:bg-gray-100"
+            }
+          `}
+        >
+          {isCompared ? "✓ Added to Compare" : "Compare"}
         </button>
       </div>
     </div>
