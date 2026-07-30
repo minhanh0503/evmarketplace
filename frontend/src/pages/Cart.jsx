@@ -51,6 +51,13 @@ export default function Cart() {
   return (
     <div className="min-h-screen bg-gray-50 px-6 py-10">
       <div className="max-w-6xl mx-auto">
+        <button
+          onClick={() => navigate("/")}
+          className="mb-6 text-sm font-medium text-gray-600 hover:text-gray-900"
+        >
+          ← Continue Shopping
+        </button>
+
         <h1 className="text-3xl font-bold text-gray-900 mb-6">Shopping Cart</h1>
 
         <div className="mb-6 flex gap-2">
