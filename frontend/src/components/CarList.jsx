@@ -1,6 +1,6 @@
 import CarCard from "./CarCard";
 
-export default function CarList({ vehicles }) {
+export default function CarList({ vehicles, onCompare, compareVehicles }) {
   if (vehicles.length === 0) {
     return <p>No vehicles found.</p>;
   }
@@ -12,7 +12,7 @@ export default function CarList({ vehicles }) {
           Available Electric Vehicles
         </h2>
 
-        <span className="text-gray-500">{vehicles.length} vehicles found</span>
+        <span className="text-gray-500">{vehicles.length} vehicles</span>
       </div>
 
       {/* Vehicle Grid */}
@@ -27,7 +27,12 @@ export default function CarList({ vehicles }) {
         "
       >
         {vehicles.map((vehicle) => (
-          <CarCard key={vehicle.id} vehicle={vehicle} />
+          <CarCard
+            key={vehicle.id}
+            vehicle={vehicle}
+            onCompare={onCompare}
+            isCompared={compareVehicles?.some((v) => v.id === vehicle.id)}
+          />
         ))}
       </div>
     </div>

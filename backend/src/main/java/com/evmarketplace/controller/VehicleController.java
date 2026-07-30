@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/vehicles")
+@RequestMapping("/api/vehicles")
 @CrossOrigin(origins = "*")
 public class VehicleController {
 
@@ -27,6 +27,12 @@ public class VehicleController {
     @PostMapping
     public Vehicle addVehicle(@RequestBody Vehicle vehicle) {
         return vehicleService.addVehicle(vehicle);
+    }
+
+    // GET hot deals (vehicles with discount > 0)
+    @GetMapping("/hot-deals")
+    public List<Vehicle> getHotDeals() {
+        return vehicleService.getHotDeals();
     }
 
     // GET vehicle by ID

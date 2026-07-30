@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function CarFilter({ filters, setFilters, onFilter }) {
+export default function CarFilter({ filters, setFilters, onFilter, onReset }) {
   const handleChange = (e) => {
     setFilters({
       ...filters,
@@ -10,7 +10,7 @@ export default function CarFilter({ filters, setFilters, onFilter }) {
 
   const selectStyle = `
     w-full
-    px-4 py-3
+    px-3 py-2
     rounded-lg
     border border-gray-300
     bg-white
@@ -27,7 +27,7 @@ export default function CarFilter({ filters, setFilters, onFilter }) {
     <div className="bg-white rounded-2xl shadow-md p-3 my-6">
       <h2 className="text-xl font-bold text-gray-800 mb-4">Filter Vehicles</h2>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
         <select
           name="condition"
           value={filters.condition}
@@ -49,8 +49,9 @@ export default function CarFilter({ filters, setFilters, onFilter }) {
           <option value="Tesla">Tesla</option>
           <option value="Hyundai">Hyundai</option>
           <option value="BMW">BMW</option>
-          <option value="Ford">Ford</option>
+          <option value="Volkswagen">Volkswagen</option>
           <option value="Kia">Kia</option>
+          <option value="Porsche">Porsche</option>
         </select>
 
         <select
@@ -63,8 +64,6 @@ export default function CarFilter({ filters, setFilters, onFilter }) {
           <option value="2026">2026</option>
           <option value="2025">2025</option>
           <option value="2024">2024</option>
-          <option value="2023">2023</option>
-          <option value="2022">2022</option>
         </select>
 
         <select
@@ -92,12 +91,37 @@ export default function CarFilter({ filters, setFilters, onFilter }) {
         </select>
 
         <select
+          name="bodyType"
+          value={filters.bodyType}
+          onChange={handleChange}
+          className={selectStyle}
+        >
+          <option value="">All Body Types</option>
+          <option value="Sedan">Sedan</option>
+          <option value="SUV">SUV</option>
+          <option value="Sports">Sports</option>
+        </select>
+
+        <select
+          name="hasAccidentHistory"
+          value={filters.hasAccidentHistory}
+          onChange={handleChange}
+          className={selectStyle}
+        >
+          <option value="">All History</option>
+          <option value="false">No Reported Accidents</option>
+          <option value="true">Reported Accidents</option>
+        </select>
+
+        <select
           name="sort"
           value={filters.sort}
           onChange={handleChange}
           className={selectStyle}
         >
           <option value="">Sort By</option>
+          <option value="mileageAsc">Mileage: Low to High</option>
+          <option value="mileageDesc">Mileage: High to Low</option>
           <option value="priceAsc">Price: Low to High</option>
           <option value="priceDesc">Price: High to Low</option>
           <option value="yearDesc">Year: New to Old</option>
@@ -106,21 +130,15 @@ export default function CarFilter({ filters, setFilters, onFilter }) {
 
       <button
         onClick={onFilter}
-        className="
-          mt-2
-          w-full sm:w-auto
-          px-3 py-3
-          rounded-lg
-          bg-blue-600
-          text-white
-          font-semibold
-          shadow-md
-          hover:bg-blue-700
-          active:scale-95
-          transition
-        "
+        className="mt-2 w-full sm:w-auto px-3 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-700 active:scale-95 transition"
       >
         Apply Filters
+      </button>
+      <button
+        onClick={onReset}
+        className="w-full sm:w-auto px-3 py-2 rounded-lg ml-5 bg-gray-200 text-gray-700 font-semibold shadow-md hover:bg-gray-300 active:scale-95 transition"
+      >
+        Reset Filters
       </button>
     </div>
   );

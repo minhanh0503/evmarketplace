@@ -1,4 +1,17 @@
-export default function CarCard({ vehicle }) {
+import { useNavigate } from "react-router-dom";
+
+export default function CarCard({ vehicle, onCompare, isCompared }) {
+  const navigate = useNavigate();
+
+  const handleViewDetails = () => {
+    navigate(`/vehicles/${vehicle.id}`);
+  };
+
+  const price = Number(vehicle.price) || 0;
+  const discount = Number(vehicle.discount) || 0;
+  const finalPrice = price - discount;
+  const hasDiscount = discount > 0;
+
   return (
     <div
       className="
@@ -43,7 +56,7 @@ export default function CarCard({ vehicle }) {
           </span>
         </div>
 
-        {vehicle.discount > 0 && (
+        {hasDiscount && (
           <span
             className="
               absolute
@@ -58,12 +71,12 @@ export default function CarCard({ vehicle }) {
               font-bold
             "
           >
-            {vehicle.discount}% OFF
+            Save ${discount.toLocaleString()}
           </span>
         )}
       </div>
 
-      {/* Vehicle Details Details */}
+      {/* Vehicle Details */}
       <div className="p-5 flex flex-col flex-grow justify-between">
         <div>
           {/* Make, Model & Year */}
@@ -81,9 +94,20 @@ export default function CarCard({ vehicle }) {
 
           {/* Price */}
           <div className="mb-4">
-            <span className="text-2xl font-black text-gray-900">
-              ${vehicle.price.toLocaleString()}
-            </span>
+            {hasDiscount ? (
+              <div className="flex items-baseline gap-2 flex-wrap">
+                <span className="text-2xl font-black text-gray-900">
+                  ${finalPrice.toLocaleString()}
+                </span>
+                <span className="text-sm text-gray-400 line-through">
+                  ${price.toLocaleString()}
+                </span>
+              </div>
+            ) : (
+              <span className="text-2xl font-black text-gray-900">
+                ${price.toLocaleString()}
+              </span>
+            )}
           </div>
 
           {/* Quick Specs Grid */}
@@ -93,7 +117,7 @@ export default function CarCard({ vehicle }) {
                 Mileage
               </span>
               <span className="font-semibold text-gray-700 mt-0.5">
-                {vehicle.mileage.toLocaleString()} km
+                {Number(vehicle.mileage || 0).toLocaleString()} km
               </span>
             </div>
 
@@ -110,6 +134,7 @@ export default function CarCard({ vehicle }) {
 
         {/* Action Button */}
         <button
+          onClick={handleViewDetails}
           className="
             mt-6
             w-full
@@ -126,6 +151,29 @@ export default function CarCard({ vehicle }) {
           "
         >
           View Details
+        </button>
+        <button
+          onClick={() => onCompare(vehicle)}
+          disabled={isCompared}
+          className={`
+            mt-3
+            w-full
+            py-3
+            rounded-xl
+            text-sm
+            font-semibold
+            border
+            transition-all
+            duration-200
+
+            ${
+              isCompared
+                ? "bg-green-50 border-green-300 text-green-700 cursor-default"
+                : "bg-white border-gray-300 text-gray-700 hover:bg-gray-100"
+            }
+          `}
+        >
+          {isCompared ? "✓ Added to Compare" : "Compare"}
         </button>
       </div>
     </div>
