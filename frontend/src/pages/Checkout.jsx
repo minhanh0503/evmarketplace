@@ -9,14 +9,12 @@ export default function Checkout() {
   const storedUser = getStoredUser();
 
   const userId =
-    location.state?.userId?.toString() ||
-    storedUser?.userId?.toString() ||
-    "";
+    location.state?.userId?.toString() || storedUser?.userId?.toString() || "";
 
   const [billingName, setBillingName] = useState(
     storedUser
       ? [storedUser.firstName, storedUser.lastName].filter(Boolean).join(" ")
-      : ""
+      : "",
   );
   const [shippingAddress, setShippingAddress] = useState("");
   const [cardNumber, setCardNumber] = useState("");
@@ -86,9 +84,12 @@ export default function Checkout() {
       <div className="max-w-xl mx-auto">
         <button
           onClick={() => navigate("/cart")}
-          className="mb-6 text-sm font-medium text-gray-600 hover:text-gray-900"
+          className="mb-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl 
+             bg-white border border-gray-200 text-gray-700 font-medium text-sm
+             shadow-sm hover:shadow-md hover:bg-gray-50 hover:text-gray-900
+             transition-all duration-200"
         >
-          ← Back to Cart
+          Back to Cart
         </button>
 
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Checkout</h1>
@@ -197,15 +198,18 @@ export default function Checkout() {
 
             {order.status === "DENIED" && (
               <p className="text-red-600 font-semibold mb-4">
-                Credit Card Authorization Failed. Your cart has been kept so
-                you can try again.
+                Credit Card Authorization Failed. Your cart has been kept so you
+                can try again.
               </p>
             )}
 
             <div className="flex gap-4">
               <button
                 onClick={() => navigate("/cart")}
-                className="text-gray-600 hover:underline"
+                className="mb-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl 
+             bg-white border border-gray-200 text-gray-700 font-medium text-sm
+             shadow-sm hover:shadow-md hover:bg-gray-50 hover:text-gray-900
+             transition-all duration-200"
               >
                 Back to Cart
               </button>

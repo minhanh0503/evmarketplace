@@ -9,9 +9,7 @@ export default function OrderHistory() {
   const storedUser = getStoredUser();
 
   const userId =
-    location.state?.userId?.toString() ||
-    storedUser?.userId?.toString() ||
-    "";
+    location.state?.userId?.toString() || storedUser?.userId?.toString() || "";
 
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -44,9 +42,12 @@ export default function OrderHistory() {
         <div className="max-w-4xl mx-auto">
           <button
             onClick={() => navigate("/")}
-            className="mb-6 text-sm font-medium text-gray-600 hover:text-gray-900"
+            className="mb-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl 
+             bg-white border border-gray-200 text-gray-700 font-medium text-sm
+             shadow-sm hover:shadow-md hover:bg-gray-50 hover:text-gray-900
+             transition-all duration-200"
           >
-            ← Back to home
+            Back to home
           </button>
           <h1 className="text-3xl font-bold text-gray-900 mb-4">
             Order History
@@ -72,14 +73,15 @@ export default function OrderHistory() {
       <div className="max-w-4xl mx-auto">
         <button
           onClick={() => navigate("/")}
-          className="mb-6 text-sm font-medium text-gray-600 hover:text-gray-900"
+          className="mb-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl 
+             bg-white border border-gray-200 text-gray-700 font-medium text-sm
+             shadow-sm hover:shadow-md hover:bg-gray-50 hover:text-gray-900
+             transition-all duration-200"
         >
-          ← Back to home
+          Back to home
         </button>
 
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Order History
-        </h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Order History</h1>
         {storedUser?.email && (
           <p className="text-sm text-gray-500 mb-6">
             Signed in as {storedUser.email}
@@ -99,9 +101,7 @@ export default function OrderHistory() {
                 <p className="font-medium">Order #{o.id}</p>
                 <span
                   className={`text-sm font-semibold ${
-                    o.status === "CONFIRMED"
-                      ? "text-green-600"
-                      : "text-red-600"
+                    o.status === "CONFIRMED" ? "text-green-600" : "text-red-600"
                   }`}
                 >
                   {o.status}

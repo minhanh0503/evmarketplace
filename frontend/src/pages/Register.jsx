@@ -196,7 +196,7 @@ export default function Register() {
           onClick={() => navigate("/")}
           className="mt-4 w-full text-sm font-medium text-gray-600 hover:text-gray-900"
         >
-          ← Back to home
+          Back to home
         </button>
       </div>
     </div>
