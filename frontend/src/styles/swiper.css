@@ -1,0 +1,45 @@
+/* Swiper Hot Deals Carousel */
+
+.swiper-button-next,
+.swiper-button-prev {
+  width: 42px !important;
+  height: 42px !important;
+  background: white;
+  border-radius: 9999px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background: #f9fafb;
+  transform: scale(1.05);
+}
+.swiper-button-prev {
+  left: 20px !important;
+}
+
+.swiper-button-next {
+  right: 20px !important;
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 12px !important;
+  font-weight: 800;
+  color: #000000;
+}
+.hot-deals-section .swiper-button-next,
+.hot-deals-section .swiper-button-prev {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.hot-deals-section:hover .swiper-button-next,
+.hot-deals-section:hover .swiper-button-prev {
+  opacity: 1;
+}
+.swiper-button-disabled {
+  opacity: 0 !important;
+  pointer-events: none;
+}
