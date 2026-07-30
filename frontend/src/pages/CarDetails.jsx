@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getVehicleById } from "../services/VehicleService";
+import { addToCart } from "../services/CartService";
 import Car360Viewer from "../components/Car360View";
 import CarCard from "../components/CarCard";
 import {
@@ -17,6 +18,23 @@ export default function CarDetails() {
   const [error, setError] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [averageRating, setAverageRating] = useState(0);
+  const [addingToCart, setAddingToCart] = useState(false);
+
+  const handleAddToCart = async () => {
+    const userId = window.prompt("Enter your user ID to add this to cart:");
+    if (!userId) return;
+
+    try {
+      setAddingToCart(true);
+      await addToCart(userId, vehicle.id, 1);
+      navigate("/cart", { state: { userId } });
+    } catch (err) {
+      console.error("Error adding to cart:", err);
+      alert("Could not add this vehicle to your cart. Please try again.");
+    } finally {
+      setAddingToCart(false);
+    }
+  };
 
   useEffect(() => {
     const fetchCarDetails = async () => {
@@ -223,6 +241,26 @@ export default function CarDetails() {
             <p className="text-gray-500">No reviews yet.</p>
           )}
         </div>
+
+        <button
+          onClick={handleAddToCart}
+          disabled={addingToCart}
+          className="
+            mt-8
+            w-full
+            bg-blue-600
+            text-white
+            py-4
+            rounded-2xl
+            font-semibold
+            text-lg
+            hover:bg-blue-700
+            transition
+            disabled:opacity-50
+          "
+        >
+          {addingToCart ? "Adding..." : "Add to Cart"}
+        </button>
 
         <button
           onClick={() => navigate(`/test-drive/${vehicle.id}`)}
