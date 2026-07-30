@@ -4,6 +4,7 @@ import com.evmarketplace.dto.LoginRequest;
 import com.evmarketplace.dto.RegisterRequest;
 import com.evmarketplace.model.User;
 import com.evmarketplace.repository.UserRepository;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -14,8 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class IdentityService {
     private final UserRepository userRepository;
 
-    // Simple in-memory session store for Deliverable 2.
-    private final Map<String, Long> activeSessions = new ConcurrentHashMap<>();
+    private final Map<String, Long> activeSessions = new ConcurrentHashMap<String, Long>();
 
     public IdentityService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -29,11 +29,13 @@ public class IdentityService {
         if (userRepository.existsByEmail(normalizedEmail))
             throw new IllegalStateException("An account with this email already exists.");
 
+        String hashedPassword = BCrypt.hashpw(request.getPassword(), BCrypt.gensalt());
+
         User user = new User(
                 request.getFirstName().trim(),
                 request.getLastName().trim(),
                 normalizedEmail,
-                request.getPassword(),
+                hashedPassword,
                 "CUSTOMER"
         );
 
@@ -56,7 +58,25 @@ public class IdentityService {
         User user = userRepository.findByEmail(normalizedEmail)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
 
-        if (!user.getPassword().equals(request.getPassword()))
+        String storedPassword = user.getPassword();
+        boolean passwordMatches;
+
+        if (isBcryptHash(storedPassword))
+            // Normal case: password is already hashed
+            passwordMatches = BCrypt.checkpw(request.getPassword(), storedPassword);
+
+        else {
+            // Legacy case: account was created before hashing existed.
+            // Fall back to plain comparison once, then upgrade it in place.
+            passwordMatches = storedPassword.equals(request.getPassword());
+
+            if (passwordMatches) {
+                user.setPassword(BCrypt.hashpw(request.getPassword(), BCrypt.gensalt()));
+                userRepository.save(user);
+            }
+        }
+
+        if (!passwordMatches)
             throw new IllegalArgumentException("Invalid email or password.");
 
         String token = UUID.randomUUID().toString();
@@ -91,6 +111,10 @@ public class IdentityService {
                 "valid", valid,
                 "message", valid ? "Session is valid." : "Session is invalid."
         );
+    }
+
+    private boolean isBcryptHash(String value) {
+        return value != null && (value.startsWith("$2a$") || value.startsWith("$2b$") || value.startsWith("$2y$"));
     }
 
     private void validateRegistrationRequest(RegisterRequest request) {
