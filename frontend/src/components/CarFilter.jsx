@@ -98,6 +98,8 @@ export default function CarFilter({ filters, setFilters, onFilter, onReset }) {
           className={selectStyle}
         >
           <option value="">Sort By</option>
+          <option value="mileageAsc">Mileage: Low to High</option>
+          <option value="mileageDesc">Mileage: High to Low</option>
           <option value="priceAsc">Price: Low to High</option>
           <option value="priceDesc">Price: High to Low</option>
           <option value="yearDesc">Year: New to Old</option>

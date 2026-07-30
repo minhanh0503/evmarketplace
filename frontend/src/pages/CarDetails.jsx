@@ -9,6 +9,7 @@ import {
   getAverageRating,
   createVehicleReview,
 } from "../services/ReviewService";
+import { getStoredUser } from "../services/AuthService";
 
 export default function CarDetails() {
   const { id } = useParams();
@@ -68,20 +69,26 @@ export default function CarDetails() {
   };
 
   const handleAddToCart = async () => {
-    const userId = window.prompt("Enter your user ID to add this to cart:");
-    if (!userId) return;
+  const stored = getStoredUser();
+  const userId = stored?.userId?.toString();
 
-    try {
-      setAddingToCart(true);
-      await addToCart(userId, vehicle.id, 1);
-      navigate("/cart", { state: { userId } });
-    } catch (err) {
-      console.error("Error adding to cart:", err);
-      alert("Could not add this vehicle to your cart. Please try again.");
-    } finally {
-      setAddingToCart(false);
-    }
-  };
+  if (!userId) {
+    alert("Please sign in to add items to your cart.");
+    navigate("/login");
+    return;
+  }
+
+  try {
+    setAddingToCart(true);
+    await addToCart(userId, vehicle.id, 1);
+    navigate("/cart", { state: { userId } });
+  } catch (err) {
+    console.error("Error adding to cart:", err);
+    alert("Could not add this vehicle to your cart. Please try again.");
+  } finally {
+    setAddingToCart(false);
+  }
+};
 
   useEffect(() => {
     const fetchCarDetails = async () => {
