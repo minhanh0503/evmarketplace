@@ -31,7 +31,7 @@ export default function CarList({ vehicles, onCompare, compareVehicles }) {
             key={vehicle.id}
             vehicle={vehicle}
             onCompare={onCompare}
-            isCompared={compareVehicles.some((v) => v.id === vehicle.id)}
+            isCompared={compareVehicles?.some((v) => v.id === vehicle.id)}
           />
         ))}
       </div>

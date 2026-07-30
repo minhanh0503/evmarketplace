@@ -13,7 +13,7 @@ export default function Cart() {
     () =>
       location.state?.userId?.toString() ||
       storedUser?.userId?.toString() ||
-      ""
+      "",
   );
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -51,7 +51,7 @@ export default function Cart() {
 
   const total = cartItems.reduce(
     (sum, item) => sum + item.unitPrice * item.quantity,
-    0
+    0,
   );
 
   // Not signed in — prompt them to log in
@@ -61,11 +61,16 @@ export default function Cart() {
         <div className="max-w-6xl mx-auto">
           <button
             onClick={() => navigate("/")}
-            className="mb-6 text-sm font-medium text-gray-600 hover:text-gray-900"
+            className="mb-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl 
+             bg-white border border-gray-200 text-gray-700 font-medium text-sm
+             shadow-sm hover:shadow-md hover:bg-gray-50 hover:text-gray-900
+             transition-all duration-200"
           >
-            ← Continue Shopping
+            Continue Shopping
           </button>
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Shopping Cart</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            Shopping Cart
+          </h1>
           <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center">
             <p className="text-gray-600 mb-4">
               Please sign in to view your cart.
@@ -87,9 +92,12 @@ export default function Cart() {
       <div className="max-w-6xl mx-auto">
         <button
           onClick={() => navigate("/")}
-          className="mb-6 text-sm font-medium text-gray-600 hover:text-gray-900"
+          className="mb-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl 
+             bg-white border border-gray-200 text-gray-700 font-medium text-sm
+             shadow-sm hover:shadow-md hover:bg-gray-50 hover:text-gray-900
+             transition-all duration-200"
         >
-          ← Continue Shopping
+          Continue Shopping
         </button>
 
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Shopping Cart</h1>
