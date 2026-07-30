@@ -14,7 +14,6 @@ import java.util.List;
 
 @Service
 public class VehicleReviewService {
-
     @Autowired
     private VehicleReviewRepository vehicleReviewRepository;
 
@@ -27,8 +26,8 @@ public class VehicleReviewService {
     }
 
 
+    @SuppressWarnings("null")
     public VehicleReview getVehicleReviewById(Long id) {
-
         return vehicleReviewRepository.findById(id)
                 .orElseThrow(() ->
                     new RuntimeException(
@@ -38,8 +37,8 @@ public class VehicleReviewService {
     }
 
 
+    @SuppressWarnings("null")
     public VehicleReview createVehicleReview(VehicleReviewRequest request) {
-
         Vehicle vehicle = vehicleRepository.findById(
             request.getVehicleId()
         )
@@ -69,13 +68,12 @@ public class VehicleReviewService {
 
 
     public List<VehicleReview> getReviewsByVehicleId(Long vehicleId) {
-
         return vehicleReviewRepository.findByVehicleId(vehicleId);
     }
 
 
+    @SuppressWarnings("null")
     public double getAverageRatingByVehicleId(Long vehicleId) {
-
         List<VehicleReview> reviews =
                 getReviewsByVehicleId(vehicleId);
 
@@ -93,13 +91,12 @@ public class VehicleReviewService {
 
 
     public List<VehicleReview> getReviewsByRating(int rating) {
-
         return vehicleReviewRepository.findByRating(rating);
     }
 
 
+    @SuppressWarnings("null")
     public void deleteVehicleReview(Long id) {
-
         vehicleReviewRepository.deleteById(id);
     }
 }

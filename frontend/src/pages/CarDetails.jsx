@@ -284,6 +284,20 @@ export default function CarDetails() {
 
             <Specification title="Condition" value={vehicle.condition} />
           </div>
+          {vehicle.hasAccidentHistory ? (
+            <div className="bg-red-50 border border-red-100 mt-8 rounded-3xl p-8">
+              <h3 className="text-xl font-bold text-red-700 mb-2">
+                Vehicle History Report
+              </h3>
+              <p className="text-red-600">{vehicle.accidentHistoryDetails}</p>
+            </div>
+          ) : (
+            <div className="bg-green-50 border border-green-100 mt-8 rounded-3xl p-8">
+              <p className="text-green-700 font-semibold">
+                No reported accidents or damage on record.
+              </p>
+            </div>
+          )}
         </div>
         <div className="bg-white mt-8 rounded-3xl shadow-sm border border-gray-100 p-8">
           <div className="flex justify-between items-center mb-6">
