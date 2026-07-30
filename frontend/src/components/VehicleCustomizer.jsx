@@ -14,10 +14,10 @@ const PAINT = [
 ];
 
 const WHEELS = [
-  { id: "stock", label: "Standard 18\"", price: 0 },
-  { id: "aero", label: "Aero 19\"", price: 1100 },
-  { id: "sport", label: "Sport 20\"", price: 2200 },
-  { id: "carbon", label: "Carbon Fiber 21\"", price: 4500 },
+  { id: "stock", label: 'Standard 18"', price: 0 },
+  { id: "aero", label: 'Aero 19"', price: 1100 },
+  { id: "sport", label: 'Sport 20"', price: 2200 },
+  { id: "carbon", label: 'Carbon Fiber 21"', price: 4500 },
 ];
 
 const INTERIOR = [
@@ -49,7 +49,14 @@ function OptionGroup({ title, options, value, onChange }) {
               type="button"
               onClick={() => onChange(opt.id)}
               className={`
-                text-left px-4 py-3 rounded-xl border transition
+                text-left 
+                    px-3 
+                    py-2.5
+                    rounded-lg
+                    border
+                    transition-all
+                    duration-200
+                    text-sm
                 ${
                   selected
                     ? "border-gray-950 bg-gray-950 text-white"
@@ -61,7 +68,9 @@ function OptionGroup({ title, options, value, onChange }) {
               <span
                 className={`text-sm ${selected ? "text-gray-300" : "text-gray-500"}`}
               >
-                {opt.price === 0 ? "Included" : `+$${opt.price.toLocaleString()}`}
+                {opt.price === 0
+                  ? "Included"
+                  : `+$${opt.price.toLocaleString()}`}
               </span>
             </button>
           );
@@ -106,13 +115,17 @@ export default function VehicleCustomizer({ basePrice, onTotalChange }) {
     <div className="bg-white mt-8 rounded-3xl shadow-sm border border-gray-100 p-8">
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Customize this vehicle</h2>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Customize this vehicle
+          </h2>
           <p className="text-gray-500 mt-1 text-sm">
             Build your configuration — cart uses this estimated total.
           </p>
         </div>
         <div className="text-right">
-          <p className="text-xs uppercase text-gray-500 font-semibold">Estimated total</p>
+          <p className="text-xs uppercase text-gray-500 font-semibold">
+            Estimated total
+          </p>
           <p className="text-3xl font-bold text-gray-900">
             ${breakdown.total.toLocaleString()}
           </p>
@@ -126,15 +139,30 @@ export default function VehicleCustomizer({ basePrice, onTotalChange }) {
       </div>
 
       <div className="space-y-6">
-        <OptionGroup title="Paint" options={PAINT} value={paint} onChange={setPaint} />
-        <OptionGroup title="Wheels" options={WHEELS} value={wheels} onChange={setWheels} />
+        <OptionGroup
+          title="Paint"
+          options={PAINT}
+          value={paint}
+          onChange={setPaint}
+        />
+        <OptionGroup
+          title="Wheels"
+          options={WHEELS}
+          value={wheels}
+          onChange={setWheels}
+        />
         <OptionGroup
           title="Interior"
           options={INTERIOR}
           value={interior}
           onChange={setInterior}
         />
-        <OptionGroup title="Packages" options={PACKS} value={pack} onChange={setPack} />
+        <OptionGroup
+          title="Packages"
+          options={PACKS}
+          value={pack}
+          onChange={setPack}
+        />
       </div>
 
       <div className="mt-6 rounded-2xl bg-gray-50 border border-gray-100 p-4 text-sm text-gray-600">
