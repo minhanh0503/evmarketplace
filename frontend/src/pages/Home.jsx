@@ -23,15 +23,15 @@ export default function Home() {
   });
 
   const resetFilters = () => {
-  setFilters({
-    condition: "",
-    make: "",
-    year: "",
-    maxPrice: "",
-    mileage: "",
-    sort: "",
-  });
-};
+    setFilters({
+      condition: "",
+      make: "",
+      year: "",
+      maxPrice: "",
+      mileage: "",
+      sort: "",
+    });
+  };
   const handleSearch = async () => {
     try {
       setLoading(true);
@@ -77,9 +77,12 @@ export default function Home() {
               </div>
               <button
                 onClick={() => navigate("/hot-deals")}
-                className="text-sm font-semibold text-blue-600 hover:text-blue-800"
+                className="mb-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl 
+             bg-white border border-gray-200 text-blue-700 font-medium text-sm
+             shadow-sm hover:shadow-md hover:bg-gray-50 hover:text-gray-900
+             transition-all duration-200"
               >
-                View all deals →
+                View all deals
               </button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">

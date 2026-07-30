@@ -112,7 +112,10 @@ export default function TestDrive() {
         {/* Back */}
         <button
           onClick={() => navigate(-1)}
-          className="mb-6 text-sm font-medium text-gray-600 hover:text-gray-900"
+          className="mb-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl 
+             bg-white border border-gray-200 text-gray-700 font-medium text-sm
+             shadow-sm hover:shadow-md hover:bg-gray-50 hover:text-gray-900
+             transition-all duration-200"
         >
           Back to vehicle
         </button>
@@ -120,14 +123,14 @@ export default function TestDrive() {
         {/* Header Card */}
         <div
           className="
-      bg-white
-      rounded-3xl
-      shadow-sm
-      border
-      border-gray-100
-      p-8
-      mb-8
-    "
+            bg-white
+            rounded-3xl
+            shadow-sm
+            border
+            border-gray-100
+            p-8
+            mb-8
+          "
         >
           <h1 className="text-4xl font-bold text-gray-900">
             Book a Test Drive
@@ -139,17 +142,17 @@ export default function TestDrive() {
 
           <div
             className="
-        mt-5
-        inline-flex
-        items-center
-        bg-blue-50
-        text-blue-600
-        px-4
-        py-2
-        rounded-full
-        text-sm
-        font-semibold
-      "
+            mt-5
+            inline-flex
+            items-center
+            bg-blue-50
+            text-blue-600
+            px-4
+            py-2
+            rounded-full
+            text-sm
+            font-semibold
+          "
           >
             Vehicle ID: {vehicleId}
           </div>
@@ -171,14 +174,14 @@ export default function TestDrive() {
         {/* Customer Information */}
         <div
           className="
-      bg-white
-      rounded-3xl
-      shadow-sm
-      border
-      border-gray-100
-      p-8
-      mb-8
-    "
+            bg-white
+            rounded-3xl
+            shadow-sm
+            border
+            border-gray-100
+            p-8
+            mb-8
+          "
         >
           <h2 className="text-2xl font-bold mb-5">Customer Information</h2>
 
@@ -189,29 +192,29 @@ export default function TestDrive() {
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
               className="
-          flex-1
-          border
-          border-gray-200
-          rounded-xl
-          px-4
-          py-3
-          focus:outline-none
-          focus:ring-2
-          focus:ring-blue-500
-        "
+                flex-1
+                border
+                border-gray-200
+                rounded-xl
+                px-4
+                py-3
+                focus:outline-none
+                focus:ring-2
+                focus:ring-blue-500
+              "
             />
 
             <button
               onClick={loadBookings}
               className="
-          bg-gray-950
-          hover:bg-blue-600
-          text-white
-          px-6
-          py-3
-          rounded-xl
-          transition
-        "
+                bg-gray-950
+                hover:bg-blue-600
+                text-white
+                px-6
+                py-3
+                rounded-xl
+                transition
+              "
             >
               View My Bookings
             </button>
@@ -221,14 +224,14 @@ export default function TestDrive() {
         {/* Available Slots */}
         <div
           className="
-      bg-white
-      rounded-3xl
-      shadow-sm
-      border
-      border-gray-100
-      p-8
-      mb-8
-    "
+            bg-white
+            rounded-3xl
+            shadow-sm
+            border
+            border-gray-100
+            p-8
+            mb-8
+          "
         >
           <h2 className="text-2xl font-bold mb-6">Available Time Slots</h2>
 
@@ -254,18 +257,18 @@ export default function TestDrive() {
             onClick={handleBook}
             disabled={booking || !selectedSlot}
             className="
-        w-full
-        bg-gray-950
-        text-white
-        py-4
-        mt-8
-        rounded-2xl
-        font-semibold
-        text-lg
-        hover:bg-blue-600
-        transition
-        disabled:opacity-50
-      "
+              w-full
+              bg-gray-950
+              text-white
+              py-4
+              mt-8
+              rounded-2xl
+              font-semibold
+              text-lg
+              hover:bg-blue-600
+              transition
+              disabled:opacity-50
+            "
           >
             {booking ? "Booking..." : "Confirm Test Drive"}
           </button>
@@ -274,13 +277,13 @@ export default function TestDrive() {
         {/* Previous Bookings */}
         <div
           className="
-      bg-white
-      rounded-3xl
-      shadow-sm
-      border
-      border-gray-100
-      p-8
-    "
+            bg-white
+            rounded-3xl
+            shadow-sm
+            border
+            border-gray-100
+            p-8
+          "
         >
           <h2 className="text-2xl font-bold mb-6">My Bookings</h2>
 
@@ -295,13 +298,13 @@ export default function TestDrive() {
                 <div
                   key={b.id}
                   className="
-              flex
-              justify-between
-              items-center
-              bg-gray-50
-              rounded-2xl
-              p-5
-            "
+                    flex
+                    justify-between
+                    items-center
+                    bg-gray-50
+                    rounded-2xl
+                    p-5
+                  "
                 >
                   <div>
                     <p className="font-semibold text-gray-900">
@@ -332,10 +335,10 @@ export default function TestDrive() {
                     <button
                       onClick={() => handleCancel(b.id)}
                       className="
-                  text-red-600
-                  font-medium
-                  hover:underline
-                "
+                        text-red-600
+                        font-medium
+                        hover:underline
+                      "
                     >
                       Cancel
                     </button>
