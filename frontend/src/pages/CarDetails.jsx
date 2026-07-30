@@ -7,6 +7,7 @@ import CarCard from "../components/CarCard";
 import {
   getReviewsByVehicleId,
   getAverageRating,
+  createVehicleReview,
 } from "../services/ReviewService";
 
 export default function CarDetails() {
@@ -19,6 +20,52 @@ export default function CarDetails() {
   const [reviews, setReviews] = useState([]);
   const [averageRating, setAverageRating] = useState(0);
   const [addingToCart, setAddingToCart] = useState(false);
+
+  const [reviewerName, setReviewerName] = useState("");
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
+  const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewError, setReviewError] = useState("");
+  const [reviewSuccess, setReviewSuccess] = useState("");
+
+  const loadReviews = async () => {
+  if (!id) return;
+  const reviewData = await getReviewsByVehicleId(id);
+  setReviews(reviewData);
+  const avg = await getAverageRating(id);
+  setAverageRating(avg);
+};
+
+const handleSubmitReview = async (e) => {
+  e.preventDefault();
+  setReviewError("");
+  setReviewSuccess("");
+
+  if (!reviewerName.trim() || !comment.trim()) {
+    setReviewError("Please enter your name and a comment.");
+    return;
+  }
+
+  try {
+    setSubmittingReview(true);
+    await createVehicleReview({
+      vehicleId: Number(id),
+      reviewerName: reviewerName.trim(),
+      rating: Number(rating),
+      comment: comment.trim(),
+    });
+    setReviewSuccess("Review submitted.");
+    setReviewerName("");
+    setRating(5);
+    setComment("");
+    await loadReviews();
+  } catch (err) {
+    console.error(err);
+    setReviewError(err.message || "Failed to submit review.");
+  } finally {
+    setSubmittingReview(false);
+  }
+  };
 
   const handleAddToCart = async () => {
     const userId = window.prompt("Enter your user ID to add this to cart:");
@@ -224,10 +271,75 @@ export default function CarDetails() {
         <div className="bg-white mt-8 rounded-3xl shadow-sm border border-gray-100 p-8">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold">Customer Reviews</h2>
-
             <span className="text-gray-500">{reviews.length} Reviews</span>
           </div>
 
+          {/* Write a review */}
+          <form onSubmit={handleSubmitReview} className="mb-10 pb-8 border-b border-gray-100">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Write a review</h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">
+                  Your name
+                </label>
+                <input
+                  type="text"
+                  value={reviewerName}
+                  onChange={(e) => setReviewerName(e.target.value)}
+                  className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                  placeholder="Jane Doe"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">
+                  Rating
+                </label>
+                <select
+                  value={rating}
+                  onChange={(e) => setRating(Number(e.target.value))}
+                  className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                >
+                  <option value={5}>5 – Excellent</option>
+                  <option value={4}>4 – Good</option>
+                  <option value={3}>3 – Average</option>
+                  <option value={2}>2 – Poor</option>
+                  <option value={1}>1 – Terrible</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-600 mb-1">
+                Comment
+              </label>
+              <textarea
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                rows={4}
+                className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                placeholder="Share your experience with this vehicle..."
+              />
+            </div>
+
+            {reviewError && (
+              <p className="text-sm text-red-500 mb-3">{reviewError}</p>
+            )}
+            {reviewSuccess && (
+              <p className="text-sm text-green-600 mb-3">{reviewSuccess}</p>
+            )}
+
+            <button
+              type="submit"
+              disabled={submittingReview}
+              className="bg-gray-950 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-600 disabled:opacity-60 transition"
+            >
+              {submittingReview ? "Submitting..." : "Submit review"}
+            </button>
+          </form>
+
+          {/* Existing list */}
           {reviews.length > 0 ? (
             reviews.map((review) => (
               <Review
