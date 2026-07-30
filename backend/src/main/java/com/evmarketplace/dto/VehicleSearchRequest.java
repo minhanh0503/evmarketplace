@@ -3,7 +3,6 @@ package com.evmarketplace.dto;
 import java.math.BigDecimal;
 
 public class VehicleSearchRequest {
-
     private String keyword;
     private String make;
     private String condition;
@@ -11,15 +10,17 @@ public class VehicleSearchRequest {
     private BigDecimal maxPrice;
     private Integer mileage;
     private String sort;
+    private String bodyType;
+    private Boolean hasAccidentHistory;
 
     public VehicleSearchRequest() {
         // default constructor required
     }
-    
+
     public String getKeyword() {
         return keyword;
     }
-    
+
     public void setKeyword(String keyword) {
         this.keyword = keyword;
     }
@@ -72,4 +73,19 @@ public class VehicleSearchRequest {
         this.sort = sort;
     }
 
+    public String getBodyType() {
+        return bodyType;
+    }
+
+    public void setBodyType(String bodyType) {
+        this.bodyType = bodyType;
+    }
+
+    public Boolean getHasAccidentHistory() {
+        return hasAccidentHistory;
+    }
+
+    public void setHasAccidentHistory(Boolean hasAccidentHistory) {
+        this.hasAccidentHistory = hasAccidentHistory;
+    }
 }

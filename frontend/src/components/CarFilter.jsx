@@ -27,7 +27,7 @@ export default function CarFilter({ filters, setFilters, onFilter, onReset }) {
     <div className="bg-white rounded-2xl shadow-md p-3 my-6">
       <h2 className="text-xl font-bold text-gray-800 mb-4">Filter Vehicles</h2>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-2">
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
         <select
           name="condition"
           value={filters.condition}
@@ -76,7 +76,6 @@ export default function CarFilter({ filters, setFilters, onFilter, onReset }) {
           <option value="30000">Under $30,000</option>
           <option value="40000">Under $40,000</option>
           <option value="50000">Under $50,000</option>
-          <option value="50000">Under $50,000</option>
         </select>
 
         <select
@@ -89,6 +88,29 @@ export default function CarFilter({ filters, setFilters, onFilter, onReset }) {
           <option value="10000">Under 10,000 km</option>
           <option value="20000">Under 20,000 km</option>
           <option value="30000">Under 30,000 km</option>
+        </select>
+
+        <select
+          name="bodyType"
+          value={filters.bodyType}
+          onChange={handleChange}
+          className={selectStyle}
+        >
+          <option value="">All Body Types</option>
+          <option value="Sedan">Sedan</option>
+          <option value="SUV">SUV</option>
+          <option value="Sports">Sports</option>
+        </select>
+
+        <select
+          name="hasAccidentHistory"
+          value={filters.hasAccidentHistory}
+          onChange={handleChange}
+          className={selectStyle}
+        >
+          <option value="">All History</option>
+          <option value="false">No Reported Accidents</option>
+          <option value="true">Reported Accidents</option>
         </select>
 
         <select
@@ -108,37 +130,13 @@ export default function CarFilter({ filters, setFilters, onFilter, onReset }) {
 
       <button
         onClick={onFilter}
-        className="
-          mt-2
-          w-full sm:w-auto
-          px-3 py-2
-          rounded-lg
-          bg-blue-600
-          text-white
-          font-semibold
-          shadow-md
-          hover:bg-blue-700
-          active:scale-95
-          transition
-        "
+        className="mt-2 w-full sm:w-auto px-3 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-700 active:scale-95 transition"
       >
         Apply Filters
       </button>
       <button
         onClick={onReset}
-        className="
-          w-full sm:w-auto
-          px-3 py-2
-          rounded-lg
-          ml-5
-          bg-gray-200
-          text-gray-700
-          font-semibold
-          shadow-md
-          hover:bg-gray-300
-          active:scale-95
-          transition
-        "
+        className="w-full sm:w-auto px-3 py-2 rounded-lg ml-5 bg-gray-200 text-gray-700 font-semibold shadow-md hover:bg-gray-300 active:scale-95 transition"
       >
         Reset Filters
       </button>
