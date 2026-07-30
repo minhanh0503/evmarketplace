@@ -10,6 +10,7 @@ import LoanCalculator from "./pages/LoanCalculator";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Navbar from "./components/Navbar";
+import OrderHistory from "./pages/OrderHistory";
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/loan-calculator/:vehicleId" element={<LoanCalculator />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/orders" element={<OrderHistory />} />
       </Routes>
       <ChatWidget />
     </>
