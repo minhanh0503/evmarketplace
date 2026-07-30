@@ -12,7 +12,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class IdentityService {
-
     private final UserRepository userRepository;
 
     // Simple in-memory session store for Deliverable 2.
@@ -27,9 +26,8 @@ public class IdentityService {
 
         String normalizedEmail = request.getEmail().trim().toLowerCase();
 
-        if (userRepository.existsByEmail(normalizedEmail)) {
+        if (userRepository.existsByEmail(normalizedEmail))
             throw new IllegalStateException("An account with this email already exists.");
-        }
 
         User user = new User(
                 request.getFirstName().trim(),
@@ -58,9 +56,8 @@ public class IdentityService {
         User user = userRepository.findByEmail(normalizedEmail)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid email or password."));
 
-        if (!user.getPassword().equals(request.getPassword())) {
+        if (!user.getPassword().equals(request.getPassword()))
             throw new IllegalArgumentException("Invalid email or password.");
-        }
 
         String token = UUID.randomUUID().toString();
         activeSessions.put(token, user.getId());
@@ -76,9 +73,8 @@ public class IdentityService {
     }
 
     public Map<String, Object> logoutUser(String token) {
-        if (token == null || token.isBlank() || !activeSessions.containsKey(token)) {
+        if (token == null || token.isBlank() || !activeSessions.containsKey(token))
             throw new IllegalArgumentException("Invalid or missing session token.");
-        }
 
         activeSessions.remove(token);
 
@@ -98,26 +94,37 @@ public class IdentityService {
     }
 
     private void validateRegistrationRequest(RegisterRequest request) {
-        if (request == null) {
+        if (request == null)
             throw new IllegalArgumentException("Registration request cannot be empty.");
-        }
 
         if (isBlank(request.getFirstName()) ||
                 isBlank(request.getLastName()) ||
                 isBlank(request.getEmail()) ||
-                isBlank(request.getPassword())) {
+                isBlank(request.getPassword()))
             throw new IllegalArgumentException("All registration fields are required.");
-        }
+
+        if (!isPasswordValid(request.getPassword()))
+            throw new IllegalArgumentException(
+                "Password must be at least 8 characters and include at least one uppercase letter and one special character."
+            );
+    }
+
+    private boolean isPasswordValid(String password) {
+        if (password.length() < 8)
+            return false;
+
+        boolean hasUpper = password.chars().anyMatch(Character::isUpperCase);
+        boolean hasSpecial = password.chars().anyMatch(c -> !Character.isLetterOrDigit(c));
+
+        return hasUpper && hasSpecial;
     }
 
     private void validateLoginRequest(LoginRequest request) {
-        if (request == null) {
+        if (request == null)
             throw new IllegalArgumentException("Login request cannot be empty.");
-        }
 
-        if (isBlank(request.getEmail()) || isBlank(request.getPassword())) {
+        if (isBlank(request.getEmail()) || isBlank(request.getPassword()))
             throw new IllegalArgumentException("Email and password are required.");
-        }
     }
 
     private boolean isBlank(String value) {
