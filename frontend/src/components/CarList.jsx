@@ -12,7 +12,7 @@ export default function CarList({ vehicles }) {
           Available Electric Vehicles
         </h2>
 
-        <span className="text-gray-500">{vehicles.length} vehicles found</span>
+        <span className="text-gray-500">{vehicles.length} vehicles</span>
       </div>
 
       {/* Vehicle Grid */}
