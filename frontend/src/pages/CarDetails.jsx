@@ -10,6 +10,7 @@ import {
   createVehicleReview,
 } from "../services/ReviewService";
 import { getStoredUser } from "../services/AuthService";
+import VehicleCustomizer from "../components/VehicleCustomizer";
 
 export default function CarDetails() {
   const { id } = useParams();
@@ -28,6 +29,7 @@ export default function CarDetails() {
   const [submittingReview, setSubmittingReview] = useState(false);
   const [reviewError, setReviewError] = useState("");
   const [reviewSuccess, setReviewSuccess] = useState("");
+  const [customTotal, setCustomTotal] = useState(null);
 
   const loadReviews = async () => {
     if (!id) return;
@@ -80,7 +82,9 @@ export default function CarDetails() {
 
   try {
     setAddingToCart(true);
-    await addToCart(userId, vehicle.id, 1);
+    const priceToUse =
+      customTotal != null ? customTotal : Number(vehicle.price);
+    await addToCart(userId, vehicle.id, 1, priceToUse);
     navigate("/cart", { state: { userId } });
   } catch (err) {
     console.error("Error adding to cart:", err);
@@ -389,7 +393,10 @@ export default function CarDetails() {
             <p className="text-gray-500">No reviews yet.</p>
           )}
         </div>
-
+        <VehicleCustomizer
+        basePrice={vehicle.price}
+        onTotalChange={setCustomTotal}
+        />
         <button
           onClick={handleAddToCart}
           disabled={addingToCart}
