@@ -59,7 +59,7 @@ export default function LoanCalculator() {
 
   return (
     <div className="min-h-screen bg-gray-50 px-6 py-10">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <button
           onClick={() => navigate(-1)}
           className="mb-6 text-sm font-medium text-gray-600 hover:text-gray-900"
