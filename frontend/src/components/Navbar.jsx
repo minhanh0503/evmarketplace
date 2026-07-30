@@ -66,6 +66,15 @@ export default function Navbar() {
             Cart
           </Link>
 
+          {user && (
+            <Link
+              to="/orders"
+              className="px-2 py-1.5 text-gray-600 hover:text-gray-900 rounded-md hidden sm:inline"
+            >
+              Orders
+            </Link>
+          )}
+
           {user ? (
             <div className="flex items-center gap-2 ml-1">
               <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-green-50 text-green-800 border border-green-200 px-2.5 py-1 text-xs font-medium max-w-[180px]">
