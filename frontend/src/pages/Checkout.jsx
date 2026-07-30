@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import { checkout } from "../services/OrderService";
 import { getStoredUser } from "../services/AuthService";
+import { getCart } from "../services/CartService";
+
 
 export default function Checkout() {
   const location = useLocation();
@@ -24,6 +26,21 @@ export default function Checkout() {
   const [cardNumber, setCardNumber] = useState("");
   const [cardExpiry, setCardExpiry] = useState("");
   const [cardCvv, setCardCvv] = useState("");
+
+  const [subtotal, setSubtotal] = useState(0);
+
+  useEffect(() => {
+    if (!userId) return;
+    getCart(userId)
+      .then((items) => {
+        const sum = items.reduce((s, i) => s + i.unitPrice * i.quantity, 0);
+        setSubtotal(sum);
+      })
+      .catch(() => {});
+  }, [userId]);
+
+  const hst = subtotal * 0.13;
+  const totalWithTax = subtotal + hst;
 
   const [order, setOrder] = useState(null);
   const [error, setError] = useState("");
@@ -212,6 +229,21 @@ export default function Checkout() {
             </div>
 
             {error && <p className="text-red-600 text-sm">{error}</p>}
+
+            <div className="border-t border-gray-200 pt-4 text-sm space-y-1">
+            <div className="flex justify-between text-gray-600">
+              <span>Subtotal</span>
+              <span>${subtotal.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between text-gray-600">
+              <span>HST (13%)</span>
+              <span>${hst.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between font-bold text-gray-900 text-base pt-1">
+              <span>Total</span>
+              <span>${totalWithTax.toLocaleString()}</span>
+            </div>
+          </div>
 
             <button
               onClick={handlePlaceOrder}
