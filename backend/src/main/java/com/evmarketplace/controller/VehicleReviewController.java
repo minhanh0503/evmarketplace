@@ -4,6 +4,7 @@ import com.evmarketplace.model.VehicleReview;
 import com.evmarketplace.service.VehicleReviewService;
 import com.evmarketplace.dto.VehicleReviewRequest;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +33,7 @@ public class VehicleReviewController {
     // CREATE review
     @PostMapping
     public VehicleReview createVehicleReview(
-            @RequestBody VehicleReviewRequest request
+            @Valid @RequestBody VehicleReviewRequest request
     ) {
 
         return vehicleReviewService.createVehicleReview(request);
