@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getVehicleById } from "../services/VehicleService";
+import { getVehicleById, getAllVehicles } from "../services/VehicleService";
 import { addToCart } from "../services/CartService";
 import Car360Viewer from "../components/Car360View";
 import CarCard from "../components/CarCard";
@@ -20,7 +20,7 @@ export default function CarDetails() {
   const [reviews, setReviews] = useState([]);
   const [averageRating, setAverageRating] = useState(0);
   const [addingToCart, setAddingToCart] = useState(false);
-
+  const [similarVehicles, setSimilarVehicles] = useState([]);
   const [reviewerName, setReviewerName] = useState("");
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
@@ -29,42 +29,42 @@ export default function CarDetails() {
   const [reviewSuccess, setReviewSuccess] = useState("");
 
   const loadReviews = async () => {
-  if (!id) return;
-  const reviewData = await getReviewsByVehicleId(id);
-  setReviews(reviewData);
-  const avg = await getAverageRating(id);
-  setAverageRating(avg);
-};
+    if (!id) return;
+    const reviewData = await getReviewsByVehicleId(id);
+    setReviews(reviewData);
+    const avg = await getAverageRating(id);
+    setAverageRating(avg);
+  };
 
-const handleSubmitReview = async (e) => {
-  e.preventDefault();
-  setReviewError("");
-  setReviewSuccess("");
+  const handleSubmitReview = async (e) => {
+    e.preventDefault();
+    setReviewError("");
+    setReviewSuccess("");
 
-  if (!reviewerName.trim() || !comment.trim()) {
-    setReviewError("Please enter your name and a comment.");
-    return;
-  }
+    if (!reviewerName.trim() || !comment.trim()) {
+      setReviewError("Please enter your name and a comment.");
+      return;
+    }
 
-  try {
-    setSubmittingReview(true);
-    await createVehicleReview({
-      vehicleId: Number(id),
-      reviewerName: reviewerName.trim(),
-      rating: Number(rating),
-      comment: comment.trim(),
-    });
-    setReviewSuccess("Review submitted.");
-    setReviewerName("");
-    setRating(5);
-    setComment("");
-    await loadReviews();
-  } catch (err) {
-    console.error(err);
-    setReviewError(err.message || "Failed to submit review.");
-  } finally {
-    setSubmittingReview(false);
-  }
+    try {
+      setSubmittingReview(true);
+      await createVehicleReview({
+        vehicleId: Number(id),
+        reviewerName: reviewerName.trim(),
+        rating: Number(rating),
+        comment: comment.trim(),
+      });
+      setReviewSuccess("Review submitted.");
+      setReviewerName("");
+      setRating(5);
+      setComment("");
+      await loadReviews();
+    } catch (err) {
+      console.error(err);
+      setReviewError(err.message || "Failed to submit review.");
+    } finally {
+      setSubmittingReview(false);
+    }
   };
 
   const handleAddToCart = async () => {
@@ -95,6 +95,13 @@ const handleSubmitReview = async (e) => {
         setReviews(reviewData);
         const rating = await getAverageRating(id);
         setAverageRating(rating);
+        const allVehicles = await getAllVehicles();
+        const similar = allVehicles
+          .filter((v) => v.id !== Number(id))
+          .filter((v) => v.make === data.make || v.condition === data.condition)
+          .slice(0, 4);
+
+        setSimilarVehicles(similar);
       } catch (err) {
         console.error("Error fetching vehicle details:", err);
         setError("Failed to load vehicle details.");
@@ -275,8 +282,13 @@ const handleSubmitReview = async (e) => {
           </div>
 
           {/* Write a review */}
-          <form onSubmit={handleSubmitReview} className="mb-10 pb-8 border-b border-gray-100">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Write a review</h3>
+          <form
+            onSubmit={handleSubmitReview}
+            className="mb-10 pb-8 border-b border-gray-100"
+          >
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Write a review
+            </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div>
@@ -411,13 +423,23 @@ const handleSubmitReview = async (e) => {
         </button>
         <h2 className="text-2xl font-bold mt-10 mb-6">Similar Vehicles</h2>
 
-        {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <CarCard />
-
-          <CarCard />
-
-          <CarCard />
-        </div> */}
+        {similarVehicles.length > 0 ? (
+          <div
+            className="
+      grid
+      grid-cols-1
+      md:grid-cols-2
+      lg:grid-cols-4
+      gap-6
+    "
+          >
+            {similarVehicles.map((vehicle) => (
+              <CarCard key={vehicle.id} vehicle={vehicle} />
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500">No similar vehicles available.</p>
+        )}
       </div>
     </div>
   );
