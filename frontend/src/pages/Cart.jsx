@@ -1,16 +1,24 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { getCart, removeCartItem } from "../services/CartService";
 
 // TODO: replace with the authenticated user's ID once Kiana's Identity
 // Service is integrated. Using a manually-entered ID as a placeholder
 // since login/session handling doesn't exist yet.
 export default function Cart() {
-  const [userId, setUserId] = useState("");
+  const location = useLocation();
+  const [userId, setUserId] = useState(location.state?.userId || "");
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (location.state?.userId) {
+      loadCart();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const loadCart = async () => {
     if (!userId) return;
