@@ -107,20 +107,19 @@ export default function TestDrive() {
   };
 
   return (
-  <div className="min-h-screen bg-gray-50 px-6 py-10">
+    <div className="min-h-screen bg-gray-50 px-6 py-10">
+      <div className="max-w-6xl mx-auto">
+        {/* Back */}
+        <button
+          onClick={() => navigate(-1)}
+          className="mb-6 text-sm font-medium text-gray-600 hover:text-gray-900"
+        >
+          Back to vehicle
+        </button>
 
-    {/* Back */}
-    <button
-      onClick={() => navigate(-1)}
-      className="mb-6 text-sm font-medium text-gray-600 hover:text-gray-900"
-    >
-      Back to vehicle
-    </button>
-
-
-    {/* Header Card */}
-    <div
-      className="
+        {/* Header Card */}
+        <div
+          className="
       bg-white
       rounded-3xl
       shadow-sm
@@ -129,17 +128,17 @@ export default function TestDrive() {
       p-8
       mb-8
     "
-    >
-      <h1 className="text-4xl font-bold text-gray-900">
-        Book a Test Drive
-      </h1>
+        >
+          <h1 className="text-4xl font-bold text-gray-900">
+            Book a Test Drive
+          </h1>
 
-      <p className="text-gray-500 mt-2">
-        Schedule your test drive and experience this vehicle in person.
-      </p>
+          <p className="text-gray-500 mt-2">
+            Schedule your test drive and experience this vehicle in person.
+          </p>
 
-      <div
-        className="
+          <div
+            className="
         mt-5
         inline-flex
         items-center
@@ -151,29 +150,27 @@ export default function TestDrive() {
         text-sm
         font-semibold
       "
-      >
-        Vehicle ID: {vehicleId}
-      </div>
-    </div>
+          >
+            Vehicle ID: {vehicleId}
+          </div>
+        </div>
 
+        {/* Messages */}
+        {error && (
+          <div className="bg-red-50 text-red-600 rounded-xl px-5 py-3 mb-6">
+            {error}
+          </div>
+        )}
 
-    {/* Messages */}
-    {error && (
-      <div className="bg-red-50 text-red-600 rounded-xl px-5 py-3 mb-6">
-        {error}
-      </div>
-    )}
+        {successMessage && (
+          <div className="bg-green-50 text-green-600 rounded-xl px-5 py-3 mb-6">
+            {successMessage}
+          </div>
+        )}
 
-    {successMessage && (
-      <div className="bg-green-50 text-green-600 rounded-xl px-5 py-3 mb-6">
-        {successMessage}
-      </div>
-    )}
-
-
-    {/* Customer Information */}
-    <div
-      className="
+        {/* Customer Information */}
+        <div
+          className="
       bg-white
       rounded-3xl
       shadow-sm
@@ -182,20 +179,16 @@ export default function TestDrive() {
       p-8
       mb-8
     "
-    >
-      <h2 className="text-2xl font-bold mb-5">
-        Customer Information
-      </h2>
+        >
+          <h2 className="text-2xl font-bold mb-5">Customer Information</h2>
 
-
-      <div className="flex flex-col md:flex-row gap-4">
-
-        <input
-          type="text"
-          placeholder="Enter your user ID"
-          value={userId}
-          onChange={(e) => setUserId(e.target.value)}
-          className="
+          <div className="flex flex-col md:flex-row gap-4">
+            <input
+              type="text"
+              placeholder="Enter your user ID"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              className="
           flex-1
           border
           border-gray-200
@@ -206,12 +199,11 @@ export default function TestDrive() {
           focus:ring-2
           focus:ring-blue-500
         "
-        />
+            />
 
-
-        <button
-          onClick={loadBookings}
-          className="
+            <button
+              onClick={loadBookings}
+              className="
           bg-gray-950
           hover:bg-blue-600
           text-white
@@ -220,18 +212,15 @@ export default function TestDrive() {
           rounded-xl
           transition
         "
-        >
-          View My Bookings
-        </button>
+            >
+              View My Bookings
+            </button>
+          </div>
+        </div>
 
-      </div>
-    </div>
-
-
-
-    {/* Available Slots */}
-    <div
-      className="
+        {/* Available Slots */}
+        <div
+          className="
       bg-white
       rounded-3xl
       shadow-sm
@@ -240,43 +229,31 @@ export default function TestDrive() {
       p-8
       mb-8
     "
-    >
+        >
+          <h2 className="text-2xl font-bold mb-6">Available Time Slots</h2>
 
-      <h2 className="text-2xl font-bold mb-6">
-        Available Time Slots
-      </h2>
+          {loadingSlots && <p className="text-gray-500">Loading slots...</p>}
 
+          {!loadingSlots && slots.length === 0 && (
+            <p className="text-gray-500">
+              No available slots for this vehicle right now.
+            </p>
+          )}
 
-      {loadingSlots && (
-        <p className="text-gray-500">
-          Loading slots...
-        </p>
-      )}
+          {!loadingSlots && slots.length > 0 && (
+            <TestDriveCalendar
+              slots={slots}
+              selectedDate={selectedDate}
+              setSelectedDate={setSelectedDate}
+              selectedSlot={selectedSlot}
+              setSelectedSlot={setSelectedSlot}
+            />
+          )}
 
-
-      {!loadingSlots && slots.length === 0 && (
-        <p className="text-gray-500">
-          No available slots for this vehicle right now.
-        </p>
-      )}
-
-
-      {!loadingSlots && slots.length > 0 && (
-        <TestDriveCalendar
-          slots={slots}
-          selectedDate={selectedDate}
-          setSelectedDate={setSelectedDate}
-          selectedSlot={selectedSlot}
-          setSelectedSlot={setSelectedSlot}
-        />
-      )}
-
-
-
-      <button
-        onClick={handleBook}
-        disabled={booking || !selectedSlot}
-        className="
+          <button
+            onClick={handleBook}
+            disabled={booking || !selectedSlot}
+            className="
         w-full
         bg-gray-950
         text-white
@@ -289,18 +266,14 @@ export default function TestDrive() {
         transition
         disabled:opacity-50
       "
-      >
-        {booking ? "Booking..." : "Confirm Test Drive"}
-      </button>
+          >
+            {booking ? "Booking..." : "Confirm Test Drive"}
+          </button>
+        </div>
 
-    </div>
-
-
-
-
-    {/* Previous Bookings */}
-    <div
-      className="
+        {/* Previous Bookings */}
+        <div
+          className="
       bg-white
       rounded-3xl
       shadow-sm
@@ -308,29 +281,20 @@ export default function TestDrive() {
       border-gray-100
       p-8
     "
-    >
+        >
+          <h2 className="text-2xl font-bold mb-6">My Bookings</h2>
 
-      <h2 className="text-2xl font-bold mb-6">
-        My Bookings
-      </h2>
-
-
-      {bookings.length === 0 ? (
-
-        <p className="text-gray-500">
-          No bookings loaded yet. Enter your user ID above and click
-          "View My Bookings".
-        </p>
-
-      ) : (
-
-        <div className="space-y-4">
-
-          {bookings.map((b) => (
-
-            <div
-              key={b.id}
-              className="
+          {bookings.length === 0 ? (
+            <p className="text-gray-500">
+              No bookings loaded yet. Enter your user ID above and click "View
+              My Bookings".
+            </p>
+          ) : (
+            <div className="space-y-4">
+              {bookings.map((b) => (
+                <div
+                  key={b.id}
+                  className="
               flex
               justify-between
               items-center
@@ -338,66 +302,50 @@ export default function TestDrive() {
               rounded-2xl
               p-5
             "
-            >
+                >
+                  <div>
+                    <p className="font-semibold text-gray-900">
+                      Vehicle {b.vehicleId}
+                    </p>
 
-              <div>
+                    <p className="text-gray-500 text-sm mt-1">
+                      {formatSlot(b.bookingDateTime)}
+                    </p>
 
-                <p className="font-semibold text-gray-900">
-                  Vehicle {b.vehicleId}
-                </p>
-
-
-                <p className="text-gray-500 text-sm mt-1">
-                  {formatSlot(b.bookingDateTime)}
-                </p>
-
-
-                <p
-                  className={`
+                    <p
+                      className={`
                   text-sm
                   mt-2
                   font-medium
                   ${
                     b.status === "CONFIRMED"
-                    ? "text-green-600"
-                    : "text-gray-400"
+                      ? "text-green-600"
+                      : "text-gray-400"
                   }
                 `}
-                >
-                  {b.status}
-                </p>
+                    >
+                      {b.status}
+                    </p>
+                  </div>
 
-
-              </div>
-
-
-
-              {b.status === "CONFIRMED" && (
-
-                <button
-                  onClick={() => handleCancel(b.id)}
-                  className="
+                  {b.status === "CONFIRMED" && (
+                    <button
+                      onClick={() => handleCancel(b.id)}
+                      className="
                   text-red-600
                   font-medium
                   hover:underline
                 "
-                >
-                  Cancel
-                </button>
-
-              )}
-
+                    >
+                      Cancel
+                    </button>
+                  )}
+                </div>
+              ))}
             </div>
-
-          ))}
-
+          )}
         </div>
-
-      )}
-
+      </div>
     </div>
-
-
-  </div>
-);
+  );
 }

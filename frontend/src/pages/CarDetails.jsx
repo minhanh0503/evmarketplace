@@ -426,12 +426,12 @@ export default function CarDetails() {
         {similarVehicles.length > 0 ? (
           <div
             className="
-      grid
-      grid-cols-1
-      md:grid-cols-2
-      lg:grid-cols-4
-      gap-6
-    "
+              grid
+              grid-cols-1
+              md:grid-cols-2
+              lg:grid-cols-4
+              gap-6
+            "
           >
             {similarVehicles.map((vehicle) => (
               <CarCard key={vehicle.id} vehicle={vehicle} />
