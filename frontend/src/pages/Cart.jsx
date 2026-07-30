@@ -45,69 +45,71 @@ export default function Cart() {
 
   const total = cartItems.reduce(
     (sum, item) => sum + item.unitPrice * item.quantity,
-    0
+    0,
   );
 
   return (
     <div className="min-h-screen bg-gray-50 px-6 py-10">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Shopping Cart</h1>
+      <div className="max-w-6xl mx-auto">
+        <h1 className="text-3xl font-bold text-gray-900 mb-6">Shopping Cart</h1>
 
-      <div className="mb-6 flex gap-2">
-        <input
-          type="text"
-          placeholder="Enter your user ID"
-          value={userId}
-          onChange={(e) => setUserId(e.target.value)}
-          className="border rounded px-3 py-2"
-        />
-        <button
-          onClick={loadCart}
-          className="bg-gray-950 hover:bg-blue-600 text-white px-4 py-2 rounded transition"
-        >
-          Load Cart
-        </button>
-      </div>
-
-      {loading && <p>Loading cart...</p>}
-      {error && <p className="text-red-600">{error}</p>}
-
-      {!loading && cartItems.length === 0 && userId && (
-        <p className="text-gray-600">Your cart is empty.</p>
-      )}
-
-      <ul className="space-y-3">
-        {cartItems.map((item) => (
-          <li
-            key={item.id}
-            className="flex justify-between items-center bg-white p-4 rounded shadow"
-          >
-            <div>
-              <p className="font-medium">Vehicle ID: {item.vehicleId}</p>
-              <p className="text-sm text-gray-600">
-                Quantity: {item.quantity} × ${item.unitPrice}
-              </p>
-            </div>
-            <button
-              onClick={() => handleRemove(item.id)}
-              className="text-red-600 hover:underline"
-            >
-              Remove
-            </button>
-          </li>
-        ))}
-      </ul>
-
-      {cartItems.length > 0 && (
-        <div className="mt-6 flex justify-between items-center">
-          <p className="text-xl font-semibold">Total: ${total.toFixed(2)}</p>
+        <div className="mb-6 flex gap-2">
+          <input
+            type="text"
+            placeholder="Enter your user ID"
+            value={userId}
+            onChange={(e) => setUserId(e.target.value)}
+            className="border rounded px-3 py-2"
+          />
           <button
-            onClick={() => navigate("/checkout", { state: { userId } })}
-            className="bg-gray-950 hover:bg-blue-600 text-white px-6 py-2 rounded transition"
+            onClick={loadCart}
+            className="bg-gray-950 hover:bg-blue-600 text-white px-4 py-2 rounded transition"
           >
-            Proceed to Checkout
+            Load Cart
           </button>
         </div>
-      )}
+
+        {loading && <p>Loading cart...</p>}
+        {error && <p className="text-red-600">{error}</p>}
+
+        {!loading && cartItems.length === 0 && userId && (
+          <p className="text-gray-600">Your cart is empty.</p>
+        )}
+
+        <ul className="space-y-3">
+          {cartItems.map((item) => (
+            <li
+              key={item.id}
+              className="flex justify-between items-center bg-white p-4 rounded shadow"
+            >
+              <div>
+                <p className="font-medium">Vehicle ID: {item.vehicleId}</p>
+                <p className="text-sm text-gray-600">
+                  Quantity: {item.quantity} × ${item.unitPrice}
+                </p>
+              </div>
+              <button
+                onClick={() => handleRemove(item.id)}
+                className="text-red-600 hover:underline"
+              >
+                Remove
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        {cartItems.length > 0 && (
+          <div className="mt-6 flex justify-between items-center">
+            <p className="text-xl font-semibold">Total: ${total.toFixed(2)}</p>
+            <button
+              onClick={() => navigate("/checkout", { state: { userId } })}
+              className="bg-gray-950 hover:bg-blue-600 text-white px-6 py-2 rounded transition"
+            >
+              Proceed to Checkout
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

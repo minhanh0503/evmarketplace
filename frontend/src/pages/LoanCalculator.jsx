@@ -62,23 +62,24 @@ export default function LoanCalculator() {
       <div className="max-w-6xl mx-auto">
         <button
           onClick={() => navigate(-1)}
-          className="mb-6 text-sm font-medium text-gray-600 hover:text-gray-900"
+          className="mb-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl 
+             bg-white border border-gray-200 text-gray-700 font-medium text-sm
+             shadow-sm hover:shadow-md hover:bg-gray-50 hover:text-gray-900
+             transition-all duration-200"
         >
           {vehicleId ? "Back to vehicle" : "Back"}
         </button>
 
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            Loan Calculator
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900">Loan Calculator</h1>
 
           {vehicleId && (
             <p className="text-gray-500 mt-2">
               {loadingVehicle
                 ? "Loading vehicle price..."
                 : vehicle
-                ? `Estimating for ${vehicle.make} ${vehicle.model} (${vehicle.year})`
-                : "Vehicle not found — using manual price entry."}
+                  ? `Estimating for ${vehicle.make} ${vehicle.model} (${vehicle.year})`
+                  : "Vehicle not found — using manual price entry."}
             </p>
           )}
 
