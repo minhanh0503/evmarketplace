@@ -62,7 +62,7 @@ export default function Cart() {
         />
         <button
           onClick={loadCart}
-          className="bg-gray-900 text-white px-4 py-2 rounded"
+          className="bg-gray-950 hover:bg-blue-600 text-white px-4 py-2 rounded transition"
         >
           Load Cart
         </button>
@@ -102,7 +102,7 @@ export default function Cart() {
           <p className="text-xl font-semibold">Total: ${total.toFixed(2)}</p>
           <button
             onClick={() => navigate("/checkout", { state: { userId } })}
-            className="bg-green-600 text-white px-6 py-2 rounded"
+            className="bg-gray-950 hover:bg-blue-600 text-white px-6 py-2 rounded transition"
           >
             Proceed to Checkout
           </button>

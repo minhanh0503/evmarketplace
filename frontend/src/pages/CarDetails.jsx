@@ -248,13 +248,13 @@ export default function CarDetails() {
           className="
             mt-8
             w-full
-            bg-blue-600
+            bg-gray-950
             text-white
             py-4
             rounded-2xl
             font-semibold
             text-lg
-            hover:bg-blue-700
+            hover:bg-blue-600
             transition
             disabled:opacity-50
           "
@@ -265,17 +265,17 @@ export default function CarDetails() {
         <button
           onClick={() => navigate(`/test-drive/${vehicle.id}`)}
           className="
-          mt-8
-          w-full
-          bg-gray-950
-          text-white
-          py-4
-          rounded-2xl
-          font-semibold
-          text-lg
-          hover:bg-blue-600
-          transition
-        "
+            mt-8
+            w-full
+            bg-gray-950
+            text-white
+            py-4
+            rounded-2xl
+            font-semibold
+            text-lg
+            hover:bg-blue-600
+            transition
+          "
         >
           Book a Test Drive TODAY
         </button>
@@ -285,14 +285,13 @@ export default function CarDetails() {
           className="
             mt-4
             w-full
-            bg-white
-            text-gray-950
-            border border-gray-950
+            bg-gray-950
+            text-white
             py-4
             rounded-2xl
             font-semibold
             text-lg
-            hover:bg-gray-50
+            hover:bg-blue-600
             transition
           "
         >
