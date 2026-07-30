@@ -200,12 +200,20 @@ export default function Checkout() {
               </p>
             )}
 
-            <button
-              onClick={() => navigate("/cart")}
-              className="text-gray-600 hover:underline"
-            >
-              Back to Cart
-            </button>
+            <div className="flex gap-4">
+              <button
+                onClick={() => navigate("/cart")}
+                className="text-gray-600 hover:underline"
+              >
+                Back to Cart
+              </button>
+              <button
+                onClick={() => navigate("/orders", { state: { userId } })}
+                className="text-gray-600 hover:underline"
+              >
+                View Order History
+              </button>
+            </div>
           </div>
         )}
       </div>
