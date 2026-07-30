@@ -18,6 +18,12 @@ public class Order {
     @Column(nullable = false)
     private Long userId;
 
+    @Column(precision = 12, scale = 2)
+    private BigDecimal subtotalAmount;
+
+    @Column(precision = 12, scale = 2)
+    private BigDecimal hstAmount;
+
     @Column(nullable = false)
     private BigDecimal totalAmount;
 
@@ -49,6 +55,22 @@ public class Order {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public BigDecimal getSubtotalAmount() {
+        return subtotalAmount;
+    }
+
+    public void setSubtotalAmount(BigDecimal subtotalAmount) {
+        this.subtotalAmount = subtotalAmount;
+    }
+
+    public BigDecimal getHstAmount() {
+        return hstAmount;
+    }
+
+    public void setHstAmount(BigDecimal hstAmount) {
+        this.hstAmount = hstAmount;
     }
 
     public BigDecimal getTotalAmount() {

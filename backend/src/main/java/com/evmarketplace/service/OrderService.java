@@ -28,11 +28,14 @@ public class OrderService {
         if (cartItems.isEmpty())
             throw new IllegalStateException("Cart is empty for user " + userId);
 
-        BigDecimal total = cartService.calculateCartTotal(userId);
+        BigDecimal cartSubtotal = cartService.calculateCartTotal(userId);
+        CheckoutPricing.Amounts amounts = CheckoutPricing.calculate(cartSubtotal);
 
         Order order = new Order();
         order.setUserId(userId);
-        order.setTotalAmount(total);
+        order.setSubtotalAmount(amounts.subtotal());
+        order.setHstAmount(amounts.hst());
+        order.setTotalAmount(amounts.total());
         order.setOrderDate(LocalDateTime.now());
         order.setStatus(Order.Status.PENDING);
 

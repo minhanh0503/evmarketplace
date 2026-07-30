@@ -1,6 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCart, removeCartItem } from "../services/CartService";
+import {
+  calculateCheckoutAmounts,
+  formatCurrency,
+} from "../utils/pricing";
 
 // TODO: replace with the authenticated user's ID once Kiana's Identity
 // Service is integrated. Using a manually-entered ID as a placeholder
@@ -35,10 +39,7 @@ export default function Cart() {
     }
   };
 
-  const total = cartItems.reduce(
-    (sum, item) => sum + item.unitPrice * item.quantity,
-    0
-  );
+  const { subtotal, hst, total } = calculateCheckoutAmounts(cartItems);
 
   return (
     <div className="min-h-screen bg-gray-50 px-6 py-10">
@@ -76,7 +77,7 @@ export default function Cart() {
             <div>
               <p className="font-medium">Vehicle ID: {item.vehicleId}</p>
               <p className="text-sm text-gray-600">
-                Quantity: {item.quantity} × ${item.unitPrice}
+                Quantity: {item.quantity} × {formatCurrency(item.unitPrice)}
               </p>
             </div>
             <button
@@ -90,10 +91,27 @@ export default function Cart() {
       </ul>
 
       {cartItems.length > 0 && (
-        <div className="mt-6 flex justify-between items-center">
-          <p className="text-xl font-semibold">Total: ${total.toFixed(2)}</p>
+        <div className="mt-6 flex justify-between items-end gap-6">
+          <div className="w-full max-w-sm space-y-2 rounded bg-white p-4 shadow">
+            <div className="flex justify-between text-gray-700">
+              <span>Subtotal</span>
+              <span>{formatCurrency(subtotal)}</span>
+            </div>
+            <div className="flex justify-between text-gray-700">
+              <span>HST (13%)</span>
+              <span>{formatCurrency(hst)}</span>
+            </div>
+            <div className="flex justify-between border-t pt-2 text-xl font-semibold">
+              <span>Total</span>
+              <span>{formatCurrency(total)}</span>
+            </div>
+          </div>
           <button
-            onClick={() => navigate("/checkout", { state: { userId } })}
+            onClick={() =>
+              navigate("/checkout", {
+                state: { userId, subtotal, hst, total },
+              })
+            }
             className="bg-green-600 text-white px-6 py-2 rounded"
           >
             Proceed to Checkout
