@@ -8,12 +8,11 @@ export default function Cart() {
   const navigate = useNavigate();
   const storedUser = getStoredUser();
 
-  // Prefer route state, then logged-in session
   const [userId] = useState(
     () =>
       location.state?.userId?.toString() ||
       storedUser?.userId?.toString() ||
-      "",
+      ""
   );
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -51,26 +50,20 @@ export default function Cart() {
 
   const total = cartItems.reduce(
     (sum, item) => sum + item.unitPrice * item.quantity,
-    0,
+    0
   );
 
-  // Not signed in — prompt them to log in
   if (!userId) {
     return (
       <div className="min-h-screen bg-gray-50 px-6 py-10">
         <div className="max-w-6xl mx-auto">
           <button
             onClick={() => navigate("/")}
-            className="mb-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl 
-             bg-white border border-gray-200 text-gray-700 font-medium text-sm
-             shadow-sm hover:shadow-md hover:bg-gray-50 hover:text-gray-900
-             transition-all duration-200"
+            className="mb-6 text-sm font-medium text-gray-600 hover:text-gray-900"
           >
-            Continue Shopping
+            ← Continue Shopping
           </button>
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            Shopping Cart
-          </h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">Shopping Cart</h1>
           <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center">
             <p className="text-gray-600 mb-4">
               Please sign in to view your cart.
@@ -92,12 +85,9 @@ export default function Cart() {
       <div className="max-w-6xl mx-auto">
         <button
           onClick={() => navigate("/")}
-          className="mb-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl 
-             bg-white border border-gray-200 text-gray-700 font-medium text-sm
-             shadow-sm hover:shadow-md hover:bg-gray-50 hover:text-gray-900
-             transition-all duration-200"
+          className="mb-6 text-sm font-medium text-gray-600 hover:text-gray-900"
         >
-          Continue Shopping
+          ← Continue Shopping
         </button>
 
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Shopping Cart</h1>
@@ -115,25 +105,46 @@ export default function Cart() {
         )}
 
         <ul className="space-y-3">
-          {cartItems.map((item) => (
-            <li
-              key={item.id}
-              className="flex justify-between items-center bg-white p-4 rounded shadow"
-            >
-              <div>
-                <p className="font-medium">Vehicle ID: {item.vehicleId}</p>
-                <p className="text-sm text-gray-600">
-                  Quantity: {item.quantity} × ${item.unitPrice}
-                </p>
-              </div>
-              <button
-                onClick={() => handleRemove(item.id)}
-                className="text-red-600 hover:underline"
+          {cartItems.map((item) => {
+            const vehicle = item.vehicle;
+            return (
+              <li
+                key={item.id}
+                className="flex justify-between items-center bg-white p-4 rounded-xl shadow gap-4"
               >
-                Remove
-              </button>
-            </li>
-          ))}
+                <div className="flex items-center gap-4 flex-1">
+                  {vehicle?.imageUrl && (
+                    <img
+                      src={vehicle.imageUrl}
+                      alt={`${vehicle.make} ${vehicle.model}`}
+                      className="w-20 h-20 object-cover rounded-lg"
+                    />
+                  )}
+                  <div>
+                    <p className="font-semibold text-gray-900">
+                      {vehicle
+                        ? `${vehicle.make} ${vehicle.model} (${vehicle.year})`
+                        : `Vehicle ID: ${item.vehicleId}`}
+                    </p>
+                    {vehicle?.color && (
+                      <p className="text-sm text-gray-500">
+                        {vehicle.color}
+                      </p>
+                    )}
+                    <p className="text-sm text-gray-600">
+                      Quantity: {item.quantity} × ${item.unitPrice.toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleRemove(item.id)}
+                  className="text-red-600 hover:underline whitespace-nowrap"
+                >
+                  Remove
+                </button>
+              </li>
+            );
+          })}
         </ul>
 
         {cartItems.length > 0 && (
