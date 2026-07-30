@@ -22,6 +22,16 @@ export default function Home() {
     sort: "",
   });
 
+  const resetFilters = () => {
+  setFilters({
+    condition: "",
+    make: "",
+    year: "",
+    maxPrice: "",
+    mileage: "",
+    sort: "",
+  });
+};
   const handleSearch = async () => {
     try {
       setLoading(true);
@@ -90,6 +100,7 @@ export default function Home() {
           filters={filters}
           setFilters={setFilters}
           onFilter={handleSearch}
+          onReset={resetFilters}
         />
 
         <CarList vehicles={vehicles} />

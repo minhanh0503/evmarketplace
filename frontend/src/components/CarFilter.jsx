@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function CarFilter({ filters, setFilters, onFilter }) {
+export default function CarFilter({ filters, setFilters, onFilter, onReset }) {
   const handleChange = (e) => {
     setFilters({
       ...filters,
@@ -10,7 +10,7 @@ export default function CarFilter({ filters, setFilters, onFilter }) {
 
   const selectStyle = `
     w-full
-    px-4 py-3
+    px-3 py-2
     rounded-lg
     border border-gray-300
     bg-white
@@ -49,8 +49,9 @@ export default function CarFilter({ filters, setFilters, onFilter }) {
           <option value="Tesla">Tesla</option>
           <option value="Hyundai">Hyundai</option>
           <option value="BMW">BMW</option>
-          <option value="Ford">Ford</option>
+          <option value="Volkswagen">Volkswagen</option>
           <option value="Kia">Kia</option>
+          <option value="Porsche">Porsche</option>
         </select>
 
         <select
@@ -63,8 +64,6 @@ export default function CarFilter({ filters, setFilters, onFilter }) {
           <option value="2026">2026</option>
           <option value="2025">2025</option>
           <option value="2024">2024</option>
-          <option value="2023">2023</option>
-          <option value="2022">2022</option>
         </select>
 
         <select
@@ -76,6 +75,7 @@ export default function CarFilter({ filters, setFilters, onFilter }) {
           <option value="">All Prices</option>
           <option value="30000">Under $30,000</option>
           <option value="40000">Under $40,000</option>
+          <option value="50000">Under $50,000</option>
           <option value="50000">Under $50,000</option>
         </select>
 
@@ -109,7 +109,7 @@ export default function CarFilter({ filters, setFilters, onFilter }) {
         className="
           mt-2
           w-full sm:w-auto
-          px-3 py-3
+          px-3 py-2
           rounded-lg
           bg-blue-600
           text-white
@@ -121,6 +121,24 @@ export default function CarFilter({ filters, setFilters, onFilter }) {
         "
       >
         Apply Filters
+      </button>
+      <button
+        onClick={onReset}
+        className="
+          w-full sm:w-auto
+          px-3 py-2
+          rounded-lg
+          ml-5
+          bg-gray-200
+          text-gray-700
+          font-semibold
+          shadow-md
+          hover:bg-gray-300
+          active:scale-95
+          transition
+        "
+      >
+        Reset Filters
       </button>
     </div>
   );
