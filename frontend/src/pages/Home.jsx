@@ -28,6 +28,8 @@ export default function Home() {
     maxPrice: "",
     mileage: "",
     sort: "",
+    bodyType: "",
+    hasAccidentHistory: "",
   });
 
   const resetFilters = () => {
@@ -38,6 +40,8 @@ export default function Home() {
       maxPrice: "",
       mileage: "",
       sort: "",
+      bodyType: "",
+      hasAccidentHistory: "",
     });
   };
   const handleSearch = async () => {

@@ -23,6 +23,7 @@ public class TestDriveService {
     private NotificationService notificationService;
 
     // Returns available 1-hour slots for a given vehicle over the next 7 days (9am-5pm)
+    @SuppressWarnings("null")
     public List<LocalDateTime> getAvailableSlots(Long vehicleId) {
         // Generate all candidate slots: tomorrow through 7 days out, 9am to 5pm, hourly
         LocalDateTime base = LocalDateTime.now()
@@ -82,6 +83,7 @@ public class TestDriveService {
     }
 
     // Cancels a booking. Throws IllegalArgumentException if not found.
+    @SuppressWarnings("null")
     @Transactional
     public TestDriveBooking cancelBooking(Long bookingId) {
         TestDriveBooking booking = testDriveBookingRepository.findById(bookingId)

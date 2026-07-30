@@ -10,6 +10,7 @@ import {
   createVehicleReview,
 } from "../services/ReviewService";
 import { getStoredUser } from "../services/AuthService";
+import VehicleCustomizer from "../components/VehicleCustomizer";
 import { useCompare } from "../contexts/CompareContext";
 
 export default function CarDetails() {
@@ -29,12 +30,13 @@ export default function CarDetails() {
   const [submittingReview, setSubmittingReview] = useState(false);
   const [reviewError, setReviewError] = useState("");
   const [reviewSuccess, setReviewSuccess] = useState("");
+  const [customTotal, setCustomTotal] = useState(null);
 
   const {
     handleCompare,
     compareVehicles,
     removeCompare,
-    clearCompare = [],
+    clearCompare,
   } = useCompare();
 
   const loadReviews = async () => {
@@ -88,7 +90,9 @@ export default function CarDetails() {
 
     try {
       setAddingToCart(true);
-      await addToCart(userId, vehicle.id, 1);
+      const priceToUse =
+        customTotal != null ? customTotal : Number(vehicle.price);
+      await addToCart(userId, vehicle.id, 1, priceToUse);
       navigate("/cart", { state: { userId } });
     } catch (err) {
       console.error("Error adding to cart:", err);
@@ -108,8 +112,8 @@ export default function CarDetails() {
         setVehicle(data);
         const reviewData = await getReviewsByVehicleId(id);
         setReviews(reviewData);
-        const rating = await getAverageRating(id);
-        setAverageRating(rating);
+        const ratingVal = await getAverageRating(id);
+        setAverageRating(ratingVal);
         const allVehicles = await getAllVehicles();
         const similar = allVehicles
           .filter((v) => v.id !== Number(id))
@@ -152,7 +156,6 @@ export default function CarDetails() {
     );
   }
 
-  // Calculate pricing based on Java BigDecimal response
   const originalPrice = Number(vehicle.price) || 0;
   const discountAmount = Number(vehicle.discount) || 0;
   const finalPrice = originalPrice - discountAmount;
@@ -160,13 +163,9 @@ export default function CarDetails() {
   return (
     <div className="min-h-screen bg-gray-50 px-6 py-10">
       <div className="max-w-6xl mx-auto">
-        {/* Back Button */}
         <button
           onClick={() => navigate("/")}
-          className="mb-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl 
-             bg-white border border-gray-200 text-gray-700 font-medium text-sm
-             shadow-sm hover:shadow-md hover:bg-gray-50 hover:text-gray-900
-             transition-all duration-200"
+          className="mb-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border border-gray-200 text-gray-700 font-medium text-sm shadow-sm hover:shadow-md hover:bg-gray-50 hover:text-gray-900 transition-all duration-200"
         >
           Back to listings
         </button>
@@ -190,65 +189,38 @@ export default function CarDetails() {
             )}
           </div>
         </div>
-        <div className="text-yellow-500 text-lg">
-          {"⭐".repeat(Math.round(averageRating))}
+
+        <div className="mt-4 flex items-center gap-2">
+          <div className="text-yellow-500 text-lg">
+            {"⭐".repeat(Math.round(averageRating) || 0)}
+          </div>
+          <span className="font-semibold">{averageRating.toFixed(1)}</span>
+          <span className="text-gray-500">({reviews.length} Reviews)</span>
         </div>
-        <span className="font-semibold">{averageRating.toFixed(1)}</span>
-        <span className="text-gray-500">({reviews.length} Reviews)</span>
+
         <div className="bg-white mt-8 rounded-3xl shadow-sm border border-gray-100 p-8">
           <div className="flex justify-between items-start">
             <div>
-              <span
-                className="
-              text-xs font-semibold uppercase
-              text-blue-600 bg-blue-50
-              px-3 py-1 rounded-full
-            "
-              >
+              <span className="text-xs font-semibold uppercase text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
                 {vehicle.condition}
               </span>
-
-              <h1
-                className="
-              text-4xl font-bold
-              text-gray-900 mt-4
-            "
-              >
+              <h1 className="text-4xl font-bold text-gray-900 mt-4">
                 {vehicle.make} {vehicle.model}
               </h1>
-
               <p className="text-gray-500 mt-2">
                 {vehicle.year} • {vehicle.color}
               </p>
             </div>
-
             <div className="text-right">
-              <p
-                className="
-              text-4xl font-extrabold
-              text-gray-900
-            "
-              >
+              <p className="text-4xl font-extrabold text-gray-900">
                 ${finalPrice.toLocaleString()}
               </p>
-
               {discountAmount > 0 && (
                 <div>
-                  <p
-                    className="
-                  line-through 
-                  text-gray-400
-                "
-                  >
+                  <p className="line-through text-gray-400">
                     ${originalPrice.toLocaleString()}
                   </p>
-
-                  <p
-                    className="
-                  text-green-600 
-                  font-semibold
-                "
-                  >
+                  <p className="text-green-600 font-semibold">
                     Save ${discountAmount.toLocaleString()}
                   </p>
                 </div>
@@ -256,50 +228,40 @@ export default function CarDetails() {
             </div>
           </div>
         </div>
-        <div
-          className="
-        bg-white mt-8
-        rounded-3xl
-        shadow-sm
-        border border-gray-100
-        p-8
-      "
-        >
-          <h2
-            className="
-          text-2xl font-bold
-          mb-6
-        "
-          >
-            Vehicle Specifications
-          </h2>
 
-          <div
-            className="
-          grid grid-cols-2
-          md:grid-cols-4
-          gap-6
-        "
-          >
+        <div className="bg-white mt-8 rounded-3xl shadow-sm border border-gray-100 p-8">
+          <h2 className="text-2xl font-bold mb-6">Vehicle Specifications</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             <Specification
               title="Mileage"
               value={`${vehicle.mileage?.toLocaleString()} miles`}
             />
-
             <Specification title="VIN" value={vehicle.vin} />
-
             <Specification title="Color" value={vehicle.color} />
-
             <Specification title="Condition" value={vehicle.condition} />
           </div>
+          {vehicle.hasAccidentHistory ? (
+            <div className="bg-red-50 border border-red-100 mt-8 rounded-3xl p-8">
+              <h3 className="text-xl font-bold text-red-700 mb-2">
+                Vehicle History Report
+              </h3>
+              <p className="text-red-600">{vehicle.accidentHistoryDetails}</p>
+            </div>
+          ) : (
+            <div className="bg-green-50 border border-green-100 mt-8 rounded-3xl p-8">
+              <p className="text-green-700 font-semibold">
+                No reported accidents or damage on record.
+              </p>
+            </div>
+          )}
         </div>
+
         <div className="bg-white mt-8 rounded-3xl shadow-sm border border-gray-100 p-8">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold">Customer Reviews</h2>
             <span className="text-gray-500">{reviews.length} Reviews</span>
           </div>
 
-          {/* Write a review */}
           <form
             onSubmit={handleSubmitReview}
             className="mb-10 pb-8 border-b border-gray-100"
@@ -307,7 +269,6 @@ export default function CarDetails() {
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               Write a review
             </h3>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <div>
                 <label className="block text-sm font-medium text-gray-600 mb-1">
@@ -321,7 +282,6 @@ export default function CarDetails() {
                   placeholder="Jane Doe"
                 />
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-600 mb-1">
                   Rating
@@ -339,7 +299,6 @@ export default function CarDetails() {
                 </select>
               </div>
             </div>
-
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-600 mb-1">
                 Comment
@@ -352,14 +311,12 @@ export default function CarDetails() {
                 placeholder="Share your experience with this vehicle..."
               />
             </div>
-
             {reviewError && (
               <p className="text-sm text-red-500 mb-3">{reviewError}</p>
             )}
             {reviewSuccess && (
               <p className="text-sm text-green-600 mb-3">{reviewSuccess}</p>
             )}
-
             <button
               type="submit"
               disabled={submittingReview}
@@ -369,7 +326,6 @@ export default function CarDetails() {
             </button>
           </form>
 
-          {/* Existing list */}
           {reviews.length > 0 ? (
             reviews.map((review) => (
               <Review
@@ -384,18 +340,16 @@ export default function CarDetails() {
           )}
         </div>
 
+        <VehicleCustomizer
+          basePrice={finalPrice}
+          onTotalChange={setCustomTotal}
+        />
+
         <button
           onClick={() => handleCompare(vehicle)}
           disabled={compareVehicles?.some((v) => v.id === vehicle.id)}
           className={`
-            mt-8
-            w-full
-            py-4
-            rounded-2xl
-            font-semibold
-            text-lg
-            transition
-
+            mt-8 w-full py-4 rounded-2xl font-semibold text-lg transition
             ${
               compareVehicles?.some((v) => v.id === vehicle.id)
                 ? "bg-green-50 text-green-700 border border-green-300 cursor-default"
@@ -407,143 +361,79 @@ export default function CarDetails() {
             ? "✓ Added to Compare"
             : "Compare Vehicle"}
         </button>
+
         <button
           onClick={handleAddToCart}
           disabled={addingToCart}
-          className="
-            mt-8
-            w-full
-            bg-gray-950
-            text-white
-            py-4
-            rounded-2xl
-            font-semibold
-            text-lg
-            hover:bg-blue-600
-            transition
-            disabled:opacity-50
-          "
+          className="mt-8 w-full bg-gray-950 text-white py-4 rounded-2xl font-semibold text-lg hover:bg-blue-600 transition disabled:opacity-50"
         >
           {addingToCart ? "Adding..." : "Add to Cart"}
         </button>
 
         <button
           onClick={() => navigate(`/test-drive/${vehicle.id}`)}
-          className="
-            mt-8
-            w-full
-            bg-gray-950
-            text-white
-            py-4
-            rounded-2xl
-            font-semibold
-            text-lg
-            hover:bg-blue-600
-            transition
-          "
+          className="mt-8 w-full bg-gray-950 text-white py-4 rounded-2xl font-semibold text-lg hover:bg-blue-600 transition"
         >
           Book a Test Drive TODAY
         </button>
 
         <button
           onClick={() => navigate(`/loan-calculator/${vehicle.id}`)}
-          className="
-            mt-4
-            w-full
-            bg-gray-950
-            text-white
-            py-4
-            rounded-2xl
-            font-semibold
-            text-lg
-            hover:bg-blue-600
-            transition
-          "
+          className="mt-4 w-full bg-gray-950 text-white py-4 rounded-2xl font-semibold text-lg hover:bg-blue-600 transition"
         >
           Estimate Monthly Payment
         </button>
-        <h2 className="text-2xl font-bold mt-10 mb-6">Similar Vehicles</h2>
 
+        <h2 className="text-2xl font-bold mt-10 mb-6">Similar Vehicles</h2>
         {similarVehicles.length > 0 ? (
-          <div
-            className="
-              grid
-              grid-cols-1
-              md:grid-cols-2
-              lg:grid-cols-4
-              gap-6
-            "
-          >
-            {similarVehicles.map((vehicle) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {similarVehicles.map((v) => (
               <CarCard
-                key={vehicle.id}
-                vehicle={vehicle}
+                key={v.id}
+                vehicle={v}
                 onCompare={handleCompare}
-                isCompared={compareVehicles.some((v) => v.id === vehicle.id)}
+                isCompared={compareVehicles?.some((c) => c.id === v.id)}
               />
             ))}
           </div>
         ) : (
           <p className="text-gray-500">No similar vehicles available.</p>
         )}
-        {compareVehicles.length > 0 && (
-          <div
-            className="
-              fixed bottom-6 left-1/2 -translate-x-1/2
-              bg-white border border-gray-200
-              rounded-2xl shadow-xl
-              p-5
-              w-[420px]
-              z-50
-            "
-          >
-            <h3 className="font-semibold text-lg mb-4">Compare Vehicles</h3>
 
+        {compareVehicles?.length > 0 && (
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white border border-gray-200 rounded-2xl shadow-xl p-5 w-[420px] z-50">
+            <h3 className="font-semibold text-lg mb-4">Compare Vehicles</h3>
             <div className="space-y-3">
-              {compareVehicles.map((vehicle) => (
+              {compareVehicles.map((v) => (
                 <div
-                  key={vehicle.id}
+                  key={v.id}
                   className="flex items-center justify-between bg-gray-50 rounded-xl px-4 py-3"
                 >
                   <span className="font-medium">
-                    {vehicle.make} {vehicle.model}
+                    {v.make} {v.model}
                   </span>
-
                   <button
-                    onClick={() => removeCompare(vehicle.id)}
-                    className="
-                    w-8 h-8
-                    rounded-full
-                    text-gray-500
-                    hover:bg-red-100
-                    hover:text-red-600
-                    transition
-                  "
+                    onClick={() => removeCompare(v.id)}
+                    className="w-8 h-8 rounded-full text-gray-500 hover:bg-red-100 hover:text-red-600 transition"
                   >
                     ✕
                   </button>
                 </div>
               ))}
             </div>
-
             <button
               disabled={compareVehicles.length < 2}
               onClick={() => {
                 navigate("/compare", {
-                  state: {
-                    vehicles: compareVehicles,
-                  },
+                  state: { vehicles: compareVehicles },
                 });
-
                 clearCompare();
               }}
-              className={`mt-5 w-full py-3 rounded-xl font-semibold transition
-                ${
-                  compareVehicles.length === 2
-                    ? "bg-blue-600 text-white hover:bg-blue-700"
-                    : "bg-gray-200 text-gray-500 cursor-not-allowed"
-                }
-              `}
+              className={`mt-5 w-full py-3 rounded-xl font-semibold transition ${
+                compareVehicles.length === 2
+                  ? "bg-blue-600 text-white hover:bg-blue-700"
+                  : "bg-gray-200 text-gray-500 cursor-not-allowed"
+              }`}
             >
               Compare Now
             </button>
@@ -552,34 +442,25 @@ export default function CarDetails() {
       </div>
     </div>
   );
-  function Specification({ title, value }) {
-    return (
-      <div>
-        <p className="text-xs uppercase text-gray-500">{title}</p>
+}
 
-        <p
-          className="
-        mt-1
-        font-semibold
-        text-gray-900
-        break-all
-      "
-        >
-          {value}
-        </p>
-      </div>
-    );
-  }
-  function Review({ name, rating, comment }) {
-    return (
-      <div className="border-b py-6 last:border-none">
-        <div className="flex justify-between">
-          <h3 className="font-semibold">{name}</h3>
-          <span className="text-yellow-500">{"⭐".repeat(rating)}</span>
-        </div>
+function Specification({ title, value }) {
+  return (
+    <div>
+      <p className="text-xs uppercase text-gray-500">{title}</p>
+      <p className="mt-1 font-semibold text-gray-900 break-all">{value}</p>
+    </div>
+  );
+}
 
-        <p className="mt-3 text-gray-600">{comment}</p>
+function Review({ name, rating, comment }) {
+  return (
+    <div className="border-b py-6 last:border-none">
+      <div className="flex justify-between">
+        <h3 className="font-semibold">{name}</h3>
+        <span className="text-yellow-500">{"⭐".repeat(rating)}</span>
       </div>
-    );
-  }
+      <p className="mt-3 text-gray-600">{comment}</p>
+    </div>
+  );
 }
