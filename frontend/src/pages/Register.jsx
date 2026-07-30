@@ -29,8 +29,16 @@ export default function Register() {
       setError("Passwords do not match.");
       return;
     }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters.");
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
+    if (!/[A-Z]/.test(password)) {
+      setError("Password must include at least one uppercase letter.");
+      return;
+    }
+    if (!/[^a-zA-Z0-9]/.test(password)) {
+      setError("Password must include at least one special character.");
       return;
     }
 
@@ -146,11 +154,14 @@ export default function Register() {
               autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="At least 6 characters"
+              placeholder="At least 8 characters"
               className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
               required
-              minLength={6}
+              minLength={8}
             />
+            <p className="mt-1.5 text-xs text-gray-500">
+              Must include at least one uppercase letter and one special character.
+            </p>
           </div>
 
           <div>

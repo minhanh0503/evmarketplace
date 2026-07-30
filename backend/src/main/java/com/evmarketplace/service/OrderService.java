@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -36,9 +37,14 @@ public class OrderService {
 
         BigDecimal total = cartService.calculateCartTotal(userId);
 
+        BigDecimal hstRate = new BigDecimal("0.13");
+        BigDecimal tax = total.multiply(hstRate).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal totalWithTax = total.add(tax);
+
         Order order = new Order();
         order.setUser(user);
-        order.setTotalAmount(total);
+        order.setTotalAmount(totalWithTax);
+
         order.setOrderDate(LocalDateTime.now());
         order.setStatus(Order.Status.PENDING);
 
