@@ -9,14 +9,18 @@ export default function Checkout() {
   const storedUser = getStoredUser();
 
   const userId =
-    location.state?.userId?.toString() || storedUser?.userId?.toString() || "";
+    location.state?.userId?.toString() ||
+    storedUser?.userId?.toString() ||
+    "";
 
   const [billingName, setBillingName] = useState(
     storedUser
       ? [storedUser.firstName, storedUser.lastName].filter(Boolean).join(" ")
-      : "",
+      : ""
   );
+  const [billingAddress, setBillingAddress] = useState("");
   const [shippingAddress, setShippingAddress] = useState("");
+  const [sameAsBilling, setSameAsBilling] = useState(true);
   const [cardNumber, setCardNumber] = useState("");
   const [cardExpiry, setCardExpiry] = useState("");
   const [cardCvv, setCardCvv] = useState("");
@@ -25,10 +29,15 @@ export default function Checkout() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const effectiveShippingAddress = sameAsBilling
+    ? billingAddress
+    : shippingAddress;
+
   const isFormValid =
     userId.trim() &&
     billingName.trim() &&
-    shippingAddress.trim() &&
+    billingAddress.trim() &&
+    effectiveShippingAddress.trim() &&
     cardNumber.replace(/\s/g, "").length >= 13 &&
     cardExpiry.trim() &&
     cardCvv.trim().length >= 3;
@@ -84,12 +93,9 @@ export default function Checkout() {
       <div className="max-w-xl mx-auto">
         <button
           onClick={() => navigate("/cart")}
-          className="mb-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl 
-             bg-white border border-gray-200 text-gray-700 font-medium text-sm
-             shadow-sm hover:shadow-md hover:bg-gray-50 hover:text-gray-900
-             transition-all duration-200"
+          className="mb-6 text-sm font-medium text-gray-600 hover:text-gray-900"
         >
-          Back to Cart
+          ← Back to Cart
         </button>
 
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Checkout</h1>
@@ -102,6 +108,10 @@ export default function Checkout() {
         {!order && (
           <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 space-y-5">
             <div>
+              <h2 className="text-lg font-bold text-gray-900 mb-3">
+                Billing Information
+              </h2>
+
               <label className="text-xs uppercase text-gray-500 font-semibold">
                 Billing name
               </label>
@@ -112,19 +122,49 @@ export default function Checkout() {
                 onChange={(e) => setBillingName(e.target.value)}
                 className="mt-1 w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-            </div>
 
-            <div>
-              <label className="text-xs uppercase text-gray-500 font-semibold">
-                Shipping address
+              <label className="text-xs uppercase text-gray-500 font-semibold mt-4 block">
+                Billing address
               </label>
               <input
                 type="text"
                 placeholder="Street, city, postal code"
-                value={shippingAddress}
-                onChange={(e) => setShippingAddress(e.target.value)}
+                value={billingAddress}
+                onChange={(e) => setBillingAddress(e.target.value)}
                 className="mt-1 w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-lg font-bold text-gray-900">
+                  Shipping Information
+                </h2>
+                <label className="flex items-center gap-2 text-sm text-gray-600">
+                  <input
+                    type="checkbox"
+                    checked={sameAsBilling}
+                    onChange={(e) => setSameAsBilling(e.target.checked)}
+                    className="rounded border-gray-300 focus:ring-blue-500"
+                  />
+                  Same as billing
+                </label>
+              </div>
+
+              {!sameAsBilling && (
+                <>
+                  <label className="text-xs uppercase text-gray-500 font-semibold">
+                    Shipping address
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Street, city, postal code"
+                    value={shippingAddress}
+                    onChange={(e) => setShippingAddress(e.target.value)}
+                    className="mt-1 w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </>
+              )}
             </div>
 
             <div>
@@ -198,18 +238,77 @@ export default function Checkout() {
 
             {order.status === "DENIED" && (
               <p className="text-red-600 font-semibold mb-4">
-                Credit Card Authorization Failed. Your cart has been kept so you
-                can try again.
+                Credit Card Authorization Failed. Your cart has been kept so
+                you can try again.
               </p>
+            )}
+
+            {order.status === "CONFIRMED" && (
+              <div className="border border-gray-200 rounded-2xl p-6 mt-4 mb-4 bg-gray-50">
+                <h3 className="font-bold text-gray-900 mb-4">Order Receipt</h3>
+
+                <div className="text-sm text-gray-600 space-y-1 mb-4">
+                  <p>
+                    <span className="font-medium text-gray-900">Order ID:</span>{" "}
+                    #{order.id}
+                  </p>
+                  <p>
+                    <span className="font-medium text-gray-900">Date:</span>{" "}
+                    {new Date(order.orderDate).toLocaleString()}
+                  </p>
+                  <p>
+                    <span className="font-medium text-gray-900">Billed to:</span>{" "}
+                    {billingName}
+                  </p>
+                  <p>
+                    <span className="font-medium text-gray-900">Billing address:</span>{" "}
+                    {billingAddress}
+                  </p>
+                  <p>
+                    <span className="font-medium text-gray-900">Shipping address:</span>{" "}
+                    {effectiveShippingAddress}
+                  </p>
+                </div>
+
+                {order.items && order.items.length > 0 && (
+                  <div className="border-t border-gray-200 pt-4">
+                    {order.items.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex justify-between text-sm py-1"
+                      >
+                        <span>
+                          {item.vehicle
+                            ? `${item.vehicle.make} ${item.vehicle.model} (${item.vehicle.year})`
+                            : `Vehicle ID: ${item.vehicleId}`}{" "}
+                          × {item.quantity}
+                        </span>
+                        <span className="font-medium">
+                          ${(item.unitPrice * item.quantity).toLocaleString()}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="border-t border-gray-200 mt-4 pt-4 flex justify-between font-bold text-gray-900">
+                  <span>Total</span>
+                  <span>${Number(order.totalAmount).toLocaleString()}</span>
+                </div>
+
+                <button
+                  onClick={() => window.print()}
+                  className="mt-4 text-sm text-blue-600 hover:underline"
+                >
+                  Print receipt
+                </button>
+              </div>
             )}
 
             <div className="flex gap-4">
               <button
                 onClick={() => navigate("/cart")}
-                className="mb-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl 
-             bg-white border border-gray-200 text-gray-700 font-medium text-sm
-             shadow-sm hover:shadow-md hover:bg-gray-50 hover:text-gray-900
-             transition-all duration-200"
+                className="text-gray-600 hover:underline"
               >
                 Back to Cart
               </button>
