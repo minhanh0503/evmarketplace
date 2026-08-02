@@ -1,22 +1,39 @@
-import { useState } from "react";
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { checkout } from "../services/OrderService";
 import { getStoredUser } from "../services/AuthService";
+import { getCart } from "../services/CartService";
+import {
+  calculateCheckoutAmounts,
+  formatCurrency,
+} from "../utils/pricing";
 
 export default function Checkout() {
   const location = useLocation();
   const navigate = useNavigate();
   const storedUser = getStoredUser();
+  const checkoutPreview = location.state;
 
   const userId =
-    location.state?.userId?.toString() || storedUser?.userId?.toString() || "";
+    location.state?.userId?.toString() ||
+    storedUser?.userId?.toString() ||
+    "";
 
   const [billingName, setBillingName] = useState(
     storedUser
-      ? [storedUser.firstName, storedUser.lastName].filter(Boolean).join(" ")
+      ? [storedUser.firstName, storedUser.lastName]
+          .filter(Boolean)
+          .join(" ")
       : "",
   );
+
+  const [billingAddress, setBillingAddress] = useState("");
   const [shippingAddress, setShippingAddress] = useState("");
+  const [sameAsBilling, setSameAsBilling] = useState(true);
   const [cardNumber, setCardNumber] = useState("");
   const [cardExpiry, setCardExpiry] = useState("");
   const [cardCvv, setCardCvv] = useState("");
@@ -25,17 +42,52 @@ export default function Checkout() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [checkoutAmounts, setCheckoutAmounts] = useState({
+    subtotal: Number(checkoutPreview?.subtotal) || 0,
+    hst: Number(checkoutPreview?.hst) || 0,
+    total: Number(checkoutPreview?.total) || 0,
+  });
+
+  useEffect(() => {
+    if (!userId) return;
+
+    getCart(userId)
+      .then((items) => {
+        setCheckoutAmounts(
+          calculateCheckoutAmounts(items),
+        );
+      })
+      .catch((err) => {
+        setError(
+          err.message || "Unable to load order summary.",
+        );
+      });
+  }, [userId]);
+
+  const {
+    subtotal,
+    hst,
+    total: totalWithTax,
+  } = checkoutAmounts;
+
+  const effectiveShippingAddress = sameAsBilling
+    ? billingAddress
+    : shippingAddress;
+
   const isFormValid =
     userId.trim() &&
     billingName.trim() &&
-    shippingAddress.trim() &&
+    billingAddress.trim() &&
+    effectiveShippingAddress.trim() &&
     cardNumber.replace(/\s/g, "").length >= 13 &&
     cardExpiry.trim() &&
     cardCvv.trim().length >= 3;
 
   const handlePlaceOrder = async () => {
     if (!isFormValid) {
-      setError("Please fill in all billing, shipping, and payment fields.");
+      setError(
+        "Please fill in all billing, shipping, and payment fields.",
+      );
       return;
     }
 
@@ -43,12 +95,7 @@ export default function Checkout() {
       setLoading(true);
       setError("");
 
-      // Billing/shipping/card details are collected here to satisfy the
-      // checkout use case (UC-P2/UC-P3), but only userId is ever sent to
-      // the backend. The card number is never transmitted or stored —
-      // per the assignment's security requirement, the visitor must type
-      // it in each time, but it is discarded client-side immediately
-      // after this call.
+      // Payment information is not transmitted or stored.
       const result = await checkout(userId);
       setOrder(result);
     } catch (err) {
@@ -62,11 +109,15 @@ export default function Checkout() {
     return (
       <div className="min-h-screen bg-gray-50 px-6 py-10">
         <div className="max-w-xl mx-auto">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Checkout</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            Checkout
+          </h1>
+
           <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center">
             <p className="text-gray-600 mb-4">
               Please sign in to complete checkout.
             </p>
+
             <Link
               to="/login"
               className="inline-block bg-gray-950 hover:bg-blue-600 text-white px-6 py-2.5 rounded-lg transition"
@@ -83,16 +134,18 @@ export default function Checkout() {
     <div className="min-h-screen bg-gray-50 px-6 py-10">
       <div className="max-w-xl mx-auto">
         <button
-          onClick={() => navigate("/cart")}
-          className="mb-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl 
-             bg-white border border-gray-200 text-gray-700 font-medium text-sm
-             shadow-sm hover:shadow-md hover:bg-gray-50 hover:text-gray-900
-             transition-all duration-200"
+          onClick={() =>
+            navigate("/cart", { state: { userId } })
+          }
+          className="mb-6 text-sm font-medium text-gray-600 hover:text-gray-900"
         >
-          Back to Cart
+          ← Back to Cart
         </button>
 
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Checkout</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          Checkout
+        </h1>
+
         {storedUser?.email && (
           <p className="text-sm text-gray-500 mb-6">
             Signed in as {storedUser.email}
@@ -102,41 +155,90 @@ export default function Checkout() {
         {!order && (
           <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 space-y-5">
             <div>
+              <h2 className="text-lg font-bold text-gray-900 mb-3">
+                Billing Information
+              </h2>
+
               <label className="text-xs uppercase text-gray-500 font-semibold">
                 Billing name
               </label>
+
               <input
                 type="text"
                 placeholder="Full name on card"
                 value={billingName}
-                onChange={(e) => setBillingName(e.target.value)}
+                onChange={(event) =>
+                  setBillingName(event.target.value)
+                }
+                className="mt-1 w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+
+              <label className="text-xs uppercase text-gray-500 font-semibold mt-4 block">
+                Billing address
+              </label>
+
+              <input
+                type="text"
+                placeholder="Street, city, postal code"
+                value={billingAddress}
+                onChange={(event) =>
+                  setBillingAddress(event.target.value)
+                }
                 className="mt-1 w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
             <div>
-              <label className="text-xs uppercase text-gray-500 font-semibold">
-                Shipping address
-              </label>
-              <input
-                type="text"
-                placeholder="Street, city, postal code"
-                value={shippingAddress}
-                onChange={(e) => setShippingAddress(e.target.value)}
-                className="mt-1 w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-lg font-bold text-gray-900">
+                  Shipping Information
+                </h2>
+
+                <label className="flex items-center gap-2 text-sm text-gray-600">
+                  <input
+                    type="checkbox"
+                    checked={sameAsBilling}
+                    onChange={(event) =>
+                      setSameAsBilling(event.target.checked)
+                    }
+                    className="rounded border-gray-300 focus:ring-blue-500"
+                  />
+                  Same as billing
+                </label>
+              </div>
+
+              {!sameAsBilling && (
+                <>
+                  <label className="text-xs uppercase text-gray-500 font-semibold">
+                    Shipping address
+                  </label>
+
+                  <input
+                    type="text"
+                    placeholder="Street, city, postal code"
+                    value={shippingAddress}
+                    onChange={(event) =>
+                      setShippingAddress(event.target.value)
+                    }
+                    className="mt-1 w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </>
+              )}
             </div>
 
             <div>
               <label className="text-xs uppercase text-gray-500 font-semibold">
                 Card number
               </label>
+
               <input
                 type="text"
                 inputMode="numeric"
                 placeholder="1234 5678 9012 3456"
                 value={cardNumber}
-                onChange={(e) => setCardNumber(e.target.value)}
+                onChange={(event) =>
+                  setCardNumber(event.target.value)
+                }
                 className="mt-1 w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -146,32 +248,62 @@ export default function Checkout() {
                 <label className="text-xs uppercase text-gray-500 font-semibold">
                   Expiry
                 </label>
+
                 <input
                   type="text"
                   placeholder="MM/YY"
                   value={cardExpiry}
-                  onChange={(e) => setCardExpiry(e.target.value)}
+                  onChange={(event) =>
+                    setCardExpiry(event.target.value)
+                  }
                   maxLength={5}
                   className="mt-1 w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+
               <div>
                 <label className="text-xs uppercase text-gray-500 font-semibold">
                   CVV
                 </label>
+
                 <input
                   type="text"
                   inputMode="numeric"
                   placeholder="123"
                   value={cardCvv}
-                  onChange={(e) => setCardCvv(e.target.value)}
+                  onChange={(event) =>
+                    setCardCvv(event.target.value)
+                  }
                   maxLength={4}
                   className="mt-1 w-full border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
             </div>
 
-            {error && <p className="text-red-600 text-sm">{error}</p>}
+            <div className="border-t border-gray-200 pt-4 text-sm space-y-2">
+              <h2 className="text-lg font-bold text-gray-900 mb-3">
+                Order Summary
+              </h2>
+
+              <div className="flex justify-between text-gray-600">
+                <span>Subtotal</span>
+                <span>{formatCurrency(subtotal)}</span>
+              </div>
+
+              <div className="flex justify-between text-gray-600">
+                <span>HST (13%)</span>
+                <span>{formatCurrency(hst)}</span>
+              </div>
+
+              <div className="flex justify-between font-bold text-gray-900 text-base border-t pt-2">
+                <span>Total</span>
+                <span>{formatCurrency(totalWithTax)}</span>
+              </div>
+            </div>
+
+            {error && (
+              <p className="text-red-600 text-sm">{error}</p>
+            )}
 
             <button
               onClick={handlePlaceOrder}
@@ -185,10 +317,28 @@ export default function Checkout() {
 
         {order && (
           <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
-            <p className="font-semibold mb-2 text-xl">
+            <p className="font-semibold mb-4 text-xl">
               Order #{order.id} — Status: {order.status}
             </p>
-            <p className="text-gray-700 mb-4">Total: ${order.totalAmount}</p>
+
+            <div className="mb-4 space-y-2">
+              <div className="flex justify-between text-gray-700">
+                <span>Subtotal</span>
+                <span>
+                  {formatCurrency(order.subtotalAmount)}
+                </span>
+              </div>
+
+              <div className="flex justify-between text-gray-700">
+                <span>HST (13%)</span>
+                <span>{formatCurrency(order.hstAmount)}</span>
+              </div>
+
+              <div className="flex justify-between border-t pt-2 font-semibold">
+                <span>Total</span>
+                <span>{formatCurrency(order.totalAmount)}</span>
+              </div>
+            </div>
 
             {order.status === "CONFIRMED" && (
               <p className="text-green-600 font-semibold mb-4">
@@ -198,23 +348,129 @@ export default function Checkout() {
 
             {order.status === "DENIED" && (
               <p className="text-red-600 font-semibold mb-4">
-                Credit Card Authorization Failed. Your cart has been kept so you
-                can try again.
+                Credit Card Authorization Failed. Your cart has
+                been kept so you can try again.
               </p>
+            )}
+
+            {order.status === "CONFIRMED" && (
+              <div className="border border-gray-200 rounded-2xl p-6 mt-4 mb-4 bg-gray-50">
+                <h3 className="font-bold text-gray-900 mb-4">
+                  Order Receipt
+                </h3>
+
+                <div className="text-sm text-gray-600 space-y-1 mb-4">
+                  <p>
+                    <span className="font-medium text-gray-900">
+                      Order ID:
+                    </span>{" "}
+                    #{order.id}
+                  </p>
+
+                  <p>
+                    <span className="font-medium text-gray-900">
+                      Date:
+                    </span>{" "}
+                    {order.orderDate
+                      ? new Date(
+                          order.orderDate,
+                        ).toLocaleString()
+                      : "Not available"}
+                  </p>
+
+                  <p>
+                    <span className="font-medium text-gray-900">
+                      Billed to:
+                    </span>{" "}
+                    {billingName}
+                  </p>
+
+                  <p>
+                    <span className="font-medium text-gray-900">
+                      Billing address:
+                    </span>{" "}
+                    {billingAddress}
+                  </p>
+
+                  <p>
+                    <span className="font-medium text-gray-900">
+                      Shipping address:
+                    </span>{" "}
+                    {effectiveShippingAddress}
+                  </p>
+                </div>
+
+                {order.items?.length > 0 && (
+                  <div className="border-t border-gray-200 pt-4">
+                    {order.items.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex justify-between text-sm py-1 gap-4"
+                      >
+                        <span>
+                          {item.vehicle
+                            ? `${item.vehicle.make} ${item.vehicle.model} (${item.vehicle.year})`
+                            : `Vehicle ID: ${item.vehicleId}`}{" "}
+                          × {item.quantity}
+                        </span>
+
+                        <span className="font-medium">
+                          {formatCurrency(
+                            Number(item.unitPrice) *
+                              Number(item.quantity),
+                          )}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div className="border-t border-gray-200 mt-4 pt-4 space-y-2">
+                  <div className="flex justify-between text-sm text-gray-700">
+                    <span>Subtotal</span>
+                    <span>
+                      {formatCurrency(order.subtotalAmount)}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between text-sm text-gray-700">
+                    <span>HST (13%)</span>
+                    <span>
+                      {formatCurrency(order.hstAmount)}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between font-bold text-gray-900">
+                    <span>Total</span>
+                    <span>
+                      {formatCurrency(order.totalAmount)}
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => window.print()}
+                  className="mt-4 text-sm text-blue-600 hover:underline"
+                >
+                  Print receipt
+                </button>
+              </div>
             )}
 
             <div className="flex gap-4">
               <button
-                onClick={() => navigate("/cart")}
-                className="mb-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl 
-             bg-white border border-gray-200 text-gray-700 font-medium text-sm
-             shadow-sm hover:shadow-md hover:bg-gray-50 hover:text-gray-900
-             transition-all duration-200"
+                onClick={() =>
+                  navigate("/cart", { state: { userId } })
+                }
+                className="text-gray-600 hover:underline"
               >
                 Back to Cart
               </button>
+
               <button
-                onClick={() => navigate("/orders", { state: { userId } })}
+                onClick={() =>
+                  navigate("/orders", { state: { userId } })
+                }
                 className="text-gray-600 hover:underline"
               >
                 View Order History

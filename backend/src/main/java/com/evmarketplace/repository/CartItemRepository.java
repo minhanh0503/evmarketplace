@@ -1,19 +1,20 @@
 package com.evmarketplace.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-
 import com.evmarketplace.model.CartItem;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface CartItemRepository extends JpaRepository<CartItem, Long> {
-    @Query("SELECT c FROM CartItem c WHERE c.user.id = :userId")
-    List<CartItem> findByUserId(@Param("userId") Long userId);
+public interface CartItemRepository
+        extends JpaRepository<CartItem, Long> {
 
-    @Modifying
-    @Query("DELETE FROM CartItem c WHERE c.user.id = :userId")
-    void deleteByUserId(@Param("userId") Long userId);
+    List<CartItem> findByUserId(Long userId);
+
+    Optional<CartItem> findByUserIdAndVehicleId(
+            Long userId,
+            Long vehicleId
+    );
+
+    void deleteByUserId(Long userId);
 }

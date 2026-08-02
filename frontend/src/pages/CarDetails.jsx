@@ -333,6 +333,7 @@ export default function CarDetails() {
                 name={review.reviewerName}
                 rating={review.rating}
                 comment={review.comment}
+                date={review.reviewDate}
               />
             ))
           ) : (
@@ -453,11 +454,18 @@ function Specification({ title, value }) {
   );
 }
 
-function Review({ name, rating, comment }) {
+function Review({ name, rating, comment, date }) {
   return (
     <div className="border-b py-6 last:border-none">
-      <div className="flex justify-between">
-        <h3 className="font-semibold">{name}</h3>
+      <div className="flex justify-between items-start">
+        <div>
+          <h3 className="font-semibold">{name}</h3>
+          {date && (
+            <p className="text-xs text-gray-400 mt-0.5">
+              {new Date(date).toLocaleDateString()}
+            </p>
+          )}
+        </div>
         <span className="text-yellow-500">{"⭐".repeat(rating)}</span>
       </div>
       <p className="mt-3 text-gray-600">{comment}</p>
