@@ -85,9 +85,9 @@ Write-Host ""
 
 Write-Host "============================================="
 Write-Host "TC-CART-04: Cart Total Calculation"
-Write-Host "Expected: order totalAmount equals sum of (unitPrice x quantity) across both vehicles"
-Write-Host "(Verified indirectly via the checkout response's totalAmount field,"
-Write-Host " since calculateCartTotal() is not exposed as its own endpoint.)"
+Write-Host "Expected: subtotalAmount equals sum of (unitPrice x quantity),"
+Write-Host "hstAmount equals 13% of subtotalAmount, and totalAmount equals subtotalAmount + hstAmount."
+Write-Host "(Verified through the checkout response fields.)"
 Write-Host "============================================="
 $totalUser = 504
 Send-JsonPost "$BaseUrl/api/cart/add" (@{ userId = $totalUser; vehicleId = 1; quantity = 2 } | ConvertTo-Json -Compress) | Out-Null
@@ -96,6 +96,6 @@ Send-JsonPost "$BaseUrl/api/cart/add" (@{ userId = $totalUser; vehicleId = 2; qu
 Write-Host "Cart before checkout (2x vehicle 1, 1x vehicle 2):"
 Write-Host (curl.exe -s -X GET "$BaseUrl/api/cart/$totalUser")
 
-Write-Host "Checkout result (check totalAmount matches manual calculation):"
+Write-Host "Checkout result (check subtotalAmount, hstAmount, and totalAmount):"
 Write-Host (Send-JsonPost "$BaseUrl/api/orders/checkout" (@{ userId = $totalUser } | ConvertTo-Json -Compress))
 Write-Host ""

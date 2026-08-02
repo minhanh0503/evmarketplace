@@ -21,6 +21,12 @@ public class Order {
     @JsonIgnoreProperties({"password"})
     private User user;
 
+    @Column(precision = 12, scale = 2)
+    private BigDecimal subtotalAmount;
+
+    @Column(precision = 12, scale = 2)
+    private BigDecimal hstAmount;
+
     @Column(nullable = false)
     private BigDecimal totalAmount;
 
@@ -55,6 +61,22 @@ public class Order {
     // convenience accessor so existing code that expects a plain userId keeps working
     public Long getUserId() {
         return user != null ? user.getId() : null;
+    }
+
+    public BigDecimal getSubtotalAmount() {
+        return subtotalAmount;
+    }
+
+    public void setSubtotalAmount(BigDecimal subtotalAmount) {
+        this.subtotalAmount = subtotalAmount;
+    }
+
+    public BigDecimal getHstAmount() {
+        return hstAmount;
+    }
+
+    public void setHstAmount(BigDecimal hstAmount) {
+        this.hstAmount = hstAmount;
     }
 
     public BigDecimal getTotalAmount() {
