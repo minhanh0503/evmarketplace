@@ -28,7 +28,13 @@ public class CartController {
                 request.getUnitPrice()
         );
         analyticsService.recordVisitEvent(httpRequest.getRemoteAddr(), request.getVehicleId(), "CART");
+
         return item;
+    }
+
+    @PatchMapping("/update/{cartItemId}")
+    public CartItem updateQuantity(@PathVariable Long cartItemId, @RequestParam Integer quantity) {
+        return cartService.updateQuantity(cartItemId, quantity);
     }
 
     @GetMapping("/{userId}")
