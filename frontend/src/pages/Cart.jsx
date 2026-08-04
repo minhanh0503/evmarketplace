@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { getCart, removeCartItem } from "../services/CartService";
+import { getCart, removeCartItem, updateCartItemQuantity } from "../services/CartService";
 import { getStoredUser } from "../services/AuthService";
 import {
   calculateCheckoutAmounts,
@@ -36,6 +36,15 @@ export default function Cart() {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUpdateQuantity = async (cartItemId, newQuantity) => {
+    try {
+      await updateCartItemQuantity(cartItemId, newQuantity);
+      await loadCart();
+    } catch (err) {
+      setError(err.message);
     }
   };
 
@@ -158,10 +167,22 @@ export default function Cart() {
                       </p>
                     )}
 
-                    <p className="text-sm text-gray-600">
-                      Quantity: {item.quantity} ×{" "}
-                      {formatCurrency(item.unitPrice)}
-                    </p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <button
+                        onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
+                        className="w-7 h-7 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold"
+                      >
+                        −
+                      </button>
+                      <span className="text-sm text-gray-600 w-6 text-center">{item.quantity}</span>
+                      <button
+                        onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
+                        className="w-7 h-7 rounded bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold"
+                      >
+                        +
+                      </button>
+                      <span className="text-sm text-gray-500 ml-2">× ${item.unitPrice.toLocaleString()}</span>
+                    </div>
                   </div>
                 </div>
 

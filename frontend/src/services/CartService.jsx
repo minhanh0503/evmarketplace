@@ -33,6 +33,16 @@ export async function addToCart(userId, vehicleId, quantity, unitPrice = null) {
   return response.json();
 }
 
+export async function updateCartItemQuantity(cartItemId, quantity) {
+  const response = await fetch(`${API_URL}/update/${cartItemId}?quantity=${quantity}`, {
+    method: "PATCH",
+  });
+  if (!response.ok) {
+    throw new Error("Failed to update quantity");
+  }
+  return response.json();
+}
+
 export async function removeCartItem(cartItemId) {
   const response = await fetch(`${API_URL}/remove/${cartItemId}`, {
     method: "DELETE",

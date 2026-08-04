@@ -16,7 +16,6 @@ import java.util.Optional;
 
 @Service
 public class CartService {
-
     @Autowired
     private CartItemRepository cartItemRepository;
 
@@ -30,18 +29,12 @@ public class CartService {
      * @param unitPrice optional override (e.g. configurator). If null, uses
      *                  vehicle price minus discount.
      */
-    public CartItem addToCart(
-            Long userId,
-            Long vehicleId,
-            Integer quantity,
-            BigDecimal unitPrice
-    ) {
+    public CartItem addToCart(Long userId, Long vehicleId, Integer quantity, BigDecimal unitPrice) {
         Objects.requireNonNull(userId, "userId must not be null");
         Objects.requireNonNull(vehicleId, "vehicleId must not be null");
 
-        if (quantity == null || quantity < 1) {
+        if (quantity == null || quantity < 1)
             throw new IllegalArgumentException("Quantity must be at least 1");
-        }
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
@@ -56,23 +49,42 @@ public class CartService {
             // Increment quantity instead of failing (better UX for "add multiple")
             CartItem item = existing.get();
             item.setQuantity(item.getQuantity() + quantity);
+
             return cartItemRepository.save(item);
         }
 
         BigDecimal effectivePrice = unitPrice;
-        if (effectivePrice == null) {
+
+        if (effectivePrice == null)
             effectivePrice = vehicle.getDiscount() != null
                     ? vehicle.getPrice().subtract(vehicle.getDiscount())
                     : vehicle.getPrice();
-        }
 
         CartItem item = new CartItem(user, vehicle, quantity, effectivePrice);
+
         return cartItemRepository.save(item);
     }
 
     /** Convenience overload if callers only pass 3 args */
     public CartItem addToCart(Long userId, Long vehicleId, Integer quantity) {
         return addToCart(userId, vehicleId, quantity, null);
+    }
+
+    public CartItem updateQuantity(Long cartItemId, Integer quantity) {
+        Objects.requireNonNull(cartItemId, "cartItemId must not be null");
+
+        CartItem item = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new IllegalArgumentException("Cart item not found: " + cartItemId));
+
+        if (quantity == null || quantity < 1) {
+            cartItemRepository.deleteById(cartItemId);
+
+            return null;
+        }
+
+        item.setQuantity(quantity);
+
+        return cartItemRepository.save(item);
     }
 
     public List<CartItem> getCartByUser(Long userId) {
@@ -96,6 +108,6 @@ public class CartService {
         return cartItemRepository.findByUser_Id(userId).stream()
                 .map(item -> item.getUnitPrice()
                         .multiply(BigDecimal.valueOf(item.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .reduce(BigDecimal.ZERO, (total, amount) -> total.add(amount));
     }
 }
