@@ -109,9 +109,11 @@ export default function TestDrive() {
       <div className="max-w-4xl mx-auto">
         <button
           onClick={() => navigate(-1)}
-          className="mb-6 text-sm font-medium text-gray-600 hover:text-gray-900"
-        >
-          ← Back
+className="mb-6 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl 
+             bg-white border border-gray-200 text-gray-700 font-medium text-sm
+             shadow-sm hover:shadow-md hover:bg-gray-50 hover:text-gray-900
+             transition-all duration-200"        >
+          Back
         </button>
 
         {/* Header Card */}
