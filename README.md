@@ -121,27 +121,22 @@ component, deployment, and sequence diagrams.
 ---
 
 ## Project Structure
+
 evmarketplace/
 ├── backend/
-│ └── src/
-│ ├── main/java/com/evmarketplace/
-│ │ ├── model/ # JPA entities (Vehicle, User, CartItem, Order, OrderItem,
-│ │ │ # Payment, TestDriveBooking, VisitEvent, Notification, ...)
-│ │ ├── controller/ # REST controllers (VehicleController, CartController,
-│ │ │ # OrderController, IdentityController, TestDriveController,
-│ │ │ # AdminReportController, NotificationController,
-│ │ │ # ChatbotController, VehicleReviewController, ...)
-│ │ ├── service/ # Business logic per module
-│ │ ├── repository/ # Spring Data JPA repositories
-│ │ └── dto/ # Request/response DTOs
-│ └── test/jmeter/ # EVMarketplace_LoadTest.jmx (performance test plan)
+│   └── src/
+│       ├── main/java/com/evmarketplace/
+│       │   ├── model/         # JPA entities (Vehicle, User, CartItem, Order, OrderItem, Payment, TestDriveBooking, VisitEvent, Notification, ...)
+│       │   ├── controller/    # REST controllers (VehicleController, CartController, OrderController, IdentityController, TestDriveController, AdminReportController, NotificationController, ChatbotController, VehicleReviewController, ...)
+│       │   ├── service/       # Business logic per module
+│       │   ├── repository/    # Spring Data JPA repositories
+│       │   └── dto/           # Request/response DTOs
+│       └── test/jmeter/       # EVMarketplace_LoadTest.jmx (performance test plan)
 ├── frontend/
-│ └── src/
-│ ├── pages/ # Home, Cart, Checkout, TestDrive, OrderHistory,
-│ │ # LoanCalculator, HotDeals, Login, Register, CarDetails, ...
-│ ├── components/ # CarCard, CarFilter, SearchBar, ChatWidget, Navbar, ...
-│ └── services/ # Fetch-based API clients (VehicleService.jsx, CartService.jsx,
-│ # OrderService.jsx, TestDriveService.jsx, ...)
+│   └── src/
+│       ├── pages/             # Home, Cart, Checkout, TestDrive, OrderHistory, LoanCalculator, HotDeals, Login, Register, CarDetails, ...
+│       ├── components/        # CarCard, CarFilter, SearchBar, ChatWidget, Navbar, ...
+│       └── services/          # Fetch-based API clients (VehicleService.jsx, CartService.jsx, OrderService.jsx, TestDriveService.jsx, ...)
 └── README.md
 
 ---
