@@ -282,7 +282,15 @@ not an in-memory counter, so the rule survives restarts and is consistent under 
 
 ## Documentation
 
-Full design and process documentation — including UML use case, sequence, package, and
-component diagrams; module/interface tables; the product/sprint backlog and GANTT chart;
-group meeting logs; the full TDD test case suite; and the team's final reflection — is
-available in the Deliverable 3 design document included in this repository.
+The complete project documentation is available in the project report.
+
+- **Project Report:** [Project_Report.pdf](./Project_Report.pdf)
+
+The report includes:
+- System architecture
+- UML diagrams (use case, sequence, package, component)
+- Design patterns
+- Sprint backlog and Gantt chart
+- Testing and evaluation
+- Deployment details
+- Team reflections
