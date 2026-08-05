@@ -122,6 +122,7 @@ component, deployment, and sequence diagrams.
 
 ## Project Structure
 
+```
 evmarketplace/
 ├── backend/
 │   └── src/
@@ -138,6 +139,7 @@ evmarketplace/
 │       ├── components/        # CarCard, CarFilter, SearchBar, ChatWidget, Navbar, ...
 │       └── services/          # Fetch-based API clients (VehicleService.jsx, CartService.jsx, OrderService.jsx, TestDriveService.jsx, ...)
 └── README.md
+```
 
 ---
 
